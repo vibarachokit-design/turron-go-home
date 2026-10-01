@@ -1,1 +1,634 @@
+<!doctype html>
+<html lang="es"><head><meta name="description" content="Turrón Go Home! Un juego de caminos en Mejillones, Chile."><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Turrón Go Home!</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#18354b;background:#f7e9ce}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(#b7ecf5 0 30%,#ffe2ab 68%,#eec58d)}.app{width:min(100%,560px);min-height:100vh;margin:auto;padding:18px 16px 28px;background:linear-gradient(180deg,#d2f4f7 0%,#fff4dc 50%,#f6d9aa 100%);box-shadow:0 0 50px #815a2630}header{text-align:center}h1{font-size:clamp(1.4rem,6vw,2rem);margin:4px 0;color:#12587a}h1 span{color:#d37038}.subtitle{margin:0 0 12px;font-size:.92rem}.hero{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#ffffffba;border:2px solid #fff;border-radius:18px;padding:10px 14px;margin-bottom:12px}.dog{font-size:3.2rem;line-height:1}.speech{font-size:.9rem;flex:1}.timebar{height:15px;border-radius:20px;background:#ffffffbb;border:2px solid #327b97;margin:0 0 10px;overflow:hidden}.timebar>div{height:100%;width:100%;background:linear-gradient(90deg,#48b598,#a8d66a);transition:width .1s linear}.timebar.low>div{background:linear-gradient(90deg,#e45349,#f2a848)}.stats{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:8px}.board{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;background:#327b97;padding:6px;border:4px solid #205d78;border-radius:18px;box-shadow:0 7px 0 #18516a;touch-action:manipulation}.tile{position:relative;aspect-ratio:1;border:0;border-radius:10px;background:#f9e2ab;box-shadow:inset 0 -3px #d5b778;cursor:pointer;padding:0;overflow:hidden;touch-action:manipulation}.tile:focus-visible{outline:3px solid #fd703b;z-index:2}.tile.ground{background:#f5d398}.tile.pipe{background:#fcdfaa}.tile .line{position:absolute;background:#69adbd;border:2px solid #388aa6}.tile .center{width:27%;height:27%;left:36.5%;top:36.5%;border-radius:50%;background:#328daa;z-index:2}.tile .n{width:23%;height:52%;top:-2%;left:38.5%;border-bottom:0}.tile .e{height:23%;width:52%;right:-2%;top:38.5%;border-left:0}.tile .s{width:23%;height:52%;bottom:-2%;left:38.5%;border-top:0}.tile .w{height:23%;width:52%;left:-2%;top:38.5%;border-right:0}.icon{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);font-size:clamp(1.1rem,6vw,2rem);filter:drop-shadow(0 1px 1px white)}.tile.start{outline:3px solid #59bd64;outline-offset:-4px}.tile.end{outline:3px solid #f1a332;outline-offset:-4px}.tile.connected .center,.tile.connected .line{background:#65d7bc}.tile:active{transform:scale(.94)}.controls{display:flex;gap:8px;margin:17px 0 11px}.controls button,.modal button{flex:1;border:0;border-radius:12px;padding:12px 9px;background:#11678a;color:white;font-weight:800;font-size:.94rem;cursor:pointer}.controls button.secondary{background:#e58b4b;color:#2e2b22}button:disabled{cursor:default}.tile:disabled{opacity:1}.message{text-align:center;min-height:42px;margin:10px 0;font-weight:650}.how{background:#ffffffa8;border-radius:13px;padding:10px 12px;font-size:.87rem;line-height:1.4;margin:0}.modal{position:fixed;inset:0;background:#11384bbd;display:flex;align-items:center;justify-content:center;padding:20px;z-index:10}.modal[hidden]{display:none}.modal article{max-width:380px;background:#fff6de;padding:25px;border-radius:20px;text-align:center;box-shadow:0 14px 40px #132e45aa}.modal h2{color:#147596}.modal button{width:100%}.muted{font-size:.82rem;color:#4b6170}
+</style><style id="art-style">.app{background:linear-gradient(180deg,#d3f3f3dd 0%,#f5e2b8cc 53%,#ffe2b9ea 100%),url(assets/gif_1ad4b33fb1.gif) center center/cover no-repeat}.hero{background:#fff8eadd}.dog{width:76px;height:70px;object-fit:contain;flex:none}.heroHouse{width:62px;height:62px;object-fit:contain}.tile{background-color:#f7dba9;background-position:center;background-size:100% 100%;box-shadow:none}.tile.connected{filter:brightness(1.08)}.tile .icon{width:68%;height:68%;object-fit:contain;font-size:initial;filter:drop-shadow(0 2px 2px #14394f66)}.tile .houseIcon{width:72%;height:72%}.board{background:#235c78cc}.how{background:#fff8eae8}.timebar{background:#ffffffd9}.decor{display:flex;justify-content:space-around;align-items:end;max-height:55px;padding:4px 15px;margin-top:7px}.decor img{width:22%;height:48px;object-fit:contain;filter:drop-shadow(0 2px 2px #724c3788)}</style><style id="tile-connect-fix">.board{gap:1px;padding:5px}.tile{border-radius:2px;background-image:linear-gradient(135deg,#ffe4af,#efd0a0)!important;background-size:auto;box-shadow:inset 0 0 0 1px #e9bf85}.tile .line,.tile .center{background:#64aec0;border:0;border-radius:0;box-shadow:none}.tile .center{width:24%;height:24%;left:38%;top:38%;z-index:2}.tile .n{width:24%;height:50%;left:38%;top:0}.tile .e{height:24%;width:50%;top:38%;right:0}.tile .s{width:24%;height:50%;left:38%;bottom:0}.tile .w{height:24%;width:50%;top:38%;left:0}.tile.connected .line,.tile.connected .center{background:#67d8bd}.tile .icon{z-index:3}.tile.start,.tile.end{z-index:1}</style><style id="animation-style">.victoryScene{display:flex;align-items:end;justify-content:center;height:150px;gap:0;overflow:visible}.victoryScene[hidden]{display:none}.victoryScene img{width:49%;height:145px;object-fit:contain;filter:drop-shadow(0 3px 4px #76583a55)}.victoryScene #victoryHouse{width:43%}.decor img:nth-child(1){animation:rockWiggle 5s ease-in-out infinite}.decor img:nth-child(2){transform-origin:bottom;animation:cactusSway 3.5s ease-in-out infinite}.decor img:nth-child(3){animation:crabWalk 2s ease-in-out infinite}.decor img:nth-child(4){animation:beanBob 1.9s ease-in-out infinite}.heroDog,.dog{animation:dogBreathe 2.6s ease-in-out infinite}.heroHouse{animation:housePulse 3s ease-in-out infinite}@keyframes rockWiggle{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-3deg)}96%{transform:rotate(3deg)}}@keyframes cactusSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}@keyframes crabWalk{0%,100%{transform:translateX(-5px)}50%{transform:translateX(5px)}}@keyframes beanBob{0%,100%{transform:translateY(0) rotate(-7deg)}50%{transform:translateY(-6px) rotate(7deg)}}@keyframes dogBreathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}@keyframes housePulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}@media(prefers-reduced-motion:reduce){.decor img,.dog,.heroHouse{animation:none}}</style><style id="rounded-routes">.tile .routeSvg{position:absolute;inset:0;width:100%;height:100%;z-index:2;overflow:hidden}.tile .routePath{fill:none;stroke:#64aec0;stroke-width:24;stroke-linecap:butt;stroke-linejoin:round}.tile.connected .routePath{stroke:#67d8bd}.tile .icon{z-index:3}</style><style id="store-polish">body{background:linear-gradient(120deg,#155b79,#4ca6b4,#f2c78d)}.app{padding:calc(14px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom));border-left:2px solid #ffffff80;border-right:2px solid #ffffff80}header h1{font-weight:950;letter-spacing:-.04em;text-shadow:0 2px #fff9;font-size:clamp(1.65rem,6vw,2.25rem)}.subtitle{font-weight:650;color:#2b6880}.hero{box-shadow:0 7px 18px #456b6540;border-radius:19px}.stats{gap:6px;margin:14px 0 7px}.stats span{background:#fff9e8ed;border:1px solid #ffffff;padding:7px 8px;border-radius:10px;font-size:.79rem;box-shadow:0 2px 5px #155b7920;white-space:nowrap}.chapterTrack{display:flex;gap:4px;margin:6px 0 11px}.chapterTrack span{height:5px;flex:1;background:#ffffff9c;border-radius:10px}.chapterTrack .done{background:#e59550}.chapterTrack .current{background:#127e9a}.board{box-shadow:0 9px 0 #174d67,0 16px 23px #23566d5e;border-color:#205e79}.tile{transition:transform .13s ease,filter .13s ease}.tile:not(:disabled):active{transform:scale(.93)}.controls button{box-shadow:0 4px 0 #174c67}.controls button.secondary{box-shadow:0 4px 0 #a95e36}.message{background:#ffffffa8;border-radius:12px;padding:8px;margin-top:15px}.how{border:1px solid #fff}.how summary{font-weight:800;cursor:pointer}.how p{margin:8px 0 0}.modal article{border:3px solid #fff;box-shadow:0 17px 45px #16364bb0;background:linear-gradient(#fff9e9,#f9dca8)}.stars{color:#eaa33d;font-size:2.2rem;letter-spacing:.12em;text-shadow:0 2px #fff}.stars[hidden]{display:none}.homeScreen{position:fixed;inset:0;z-index:30;background:#0c435ad9;display:flex;justify-content:center;align-items:center;padding:12px}.homeScreen[hidden]{display:none}.homeCard{position:relative;width:min(100%,440px);height:min(94dvh,820px);border-radius:24px;overflow:hidden;box-shadow:0 22px 60px #062e45bd;border:3px solid #fbe1ab;background:#1382a7}.coverArt{display:block;width:100%;height:100%;object-fit:cover}.homeActions{position:absolute;bottom:0;left:0;right:0;padding:55px 24px calc(25px + env(safe-area-inset-bottom));text-align:center;color:#fff;background:linear-gradient(transparent,#134a64e8 38%,#123f59f5)}.homeActions p{font-size:1.07rem;font-weight:800;text-shadow:0 2px 3px #14354c}.homeActions button{display:block;width:100%;border:0;border-radius:16px;background:#f28e45;color:#183c4f;font-size:1.25rem;font-weight:950;padding:15px;box-shadow:0 5px 0 #ac5429;cursor:pointer}.homeActions small{display:block;margin-top:17px;font-weight:650}@media(max-height:700px){.homeCard{height:100%}.homeActions{padding-top:25px;padding-bottom:14px}}@media(prefers-reduced-motion:reduce){.tile{transition:none}}</style><style id="level-select">.levelSelect{position:fixed;inset:0;z-index:20;background:#0c435ae0;display:flex;justify-content:center;align-items:flex-start;padding:calc(12px + env(safe-area-inset-top)) 12px 12px;overflow-y:auto}.levelSelect[hidden]{display:none}.lsCard{width:min(100%,520px);background:linear-gradient(#fff9e9,#f9dca8);border:3px solid #fff;border-radius:22px;padding:16px;box-shadow:0 18px 45px #06283dbb}.lsHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.lsHead h2{margin:0;color:#12587a;font-size:1.3rem}.lsHead span{font-weight:800;color:#b86e22;background:#fff;padding:5px 10px;border-radius:12px}.worldTabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:12px 0 8px}.worldTab{border:2px solid #fff;border-radius:12px;background:#ffffffb8;padding:7px 3px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#18354b;font:inherit}.worldTab b{font-size:1.4rem}.worldTab span{font-size:.7rem;font-weight:800;line-height:1.1;text-align:center}.worldTab small{font-size:.68rem;color:#b86e22;font-weight:700}.worldTab.sel{background:#11678a;color:#fff;border-color:#0c4e69}.worldTab.sel small{color:#ffd48f}.worldTab:disabled{opacity:.55;cursor:default}.worldDesc{font-size:.85rem;margin:4px 2px 10px;color:#2b6880}.levelGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.lvBtn{border:0;border-radius:14px;background:#11678a;color:#fff;padding:9px 2px 7px;box-shadow:0 4px 0 #0b4760;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;font:inherit}.lvBtn b{font-size:1.3rem}.lvBtn span{color:#ffd48f;font-size:.8rem;letter-spacing:.05em;min-height:1em}.lvBtn em{font-style:normal;font-size:.62rem;opacity:.9}.lvBtn.cur{outline:3px solid #f28e45}.lvBtn.locked{background:#b9c4c9;box-shadow:0 4px 0 #8d9aa0;cursor:default}.lsClose{width:100%;margin-top:14px;border:0;border-radius:12px;padding:11px;background:#e58b4b;color:#2e2b22;font-weight:800;font-size:.95rem;box-shadow:0 4px 0 #a95e36;cursor:pointer}.lsClose[hidden]{display:none}.devToggle{display:flex;gap:8px;align-items:flex-start;margin-top:14px;font-size:.78rem;color:#4b6170}.devTools{font-size:.75rem;color:#4b6170}.devTools[hidden]{display:none}.devTools button{margin:4px 6px 0 0;border:1px solid #11678a;background:#fff;border-radius:8px;padding:6px 8px;font:inherit;cursor:pointer}.devTools textarea{width:100%;margin-top:6px;font:12px monospace}.devTools textarea[hidden]{display:none}.devPanel{background:#fff3c4;border:2px dashed #d39a2d;border-radius:12px;padding:8px 10px;margin:10px 0;font-size:.78rem}.devPanel[hidden]{display:none}.devPanel p{margin:0 0 6px}.devPanel div{display:flex;gap:6px}.devPanel button{flex:1;border:0;border-radius:8px;padding:7px 4px;background:#d39a2d;color:#fff;font-weight:800;font-size:.78rem;cursor:pointer}.tile.devRoute{box-shadow:inset 0 0 0 2px #ec593d88}.board[data-size="6"] .tile .routePath{stroke-width:26}.board[data-size="7"] .tile .routePath{stroke-width:28}</style><style id="animated-sprite-style">
+.titlePaw,.worldIcon,.levelWorldIcon{display:inline-block;background-image:url(assets/webp_3cb78f7132.webp);background-repeat:no-repeat;flex:none}
+.titlePaw{width:36px;height:36px;vertical-align:-7px;background-size:108px 72px;background-position:-36px -36px}
+.worldIcon{width:38px;height:38px;background-size:114px 76px;vertical-align:middle;margin:auto}
+.worldIcon.costa{background-position:0 0}.worldIcon.puerto{background-position:-38px 0}.worldIcon.dunas{background-position:-76px 0}.worldIcon.cerro{background-position:0 -38px}
+.levelWorldIcon{width:23px;height:23px;background-size:69px 46px;vertical-align:-5px}
+.levelWorldIcon.costa{background-position:0 0}.levelWorldIcon.puerto{background-position:-23px 0}.levelWorldIcon.dunas{background-position:-46px 0}.levelWorldIcon.cerro{background-position:0 -23px}
+.timeDog{display:none;width:70px;height:70px;flex:none;background-image:url(assets/webp_43d98d74f3.webp);background-size:280px 210px;background-position:0 0;filter:drop-shadow(0 2px 3px #633c2366)}
+.hero.impatient .dog{display:none}.hero.impatient .timeDog{display:block}
+.crabSprite{position:absolute;z-index:8;width:56px;height:56px;left:50%;top:50%;transform:translate(-50%,-55%);background-image:url(assets/webp_3e11778e45.webp);background-size:224px 112px;background-position:0 0;pointer-events:none;filter:drop-shadow(0 3px 3px #562c1c88);animation:crabHop .38s ease-in-out infinite alternate}
+.tile.crabTarget{outline:3px dashed #eb6334;outline-offset:-5px;box-shadow:0 0 13px #f08632}
+@keyframes crabHop{from{transform:translate(-50%,-62%) rotate(-6deg)}to{transform:translate(-50%,-45%) rotate(6deg)}}
+</style><style id="coastal-game-art-v7">
+:root{color:#183a4d;background:#87c5e8}
+body{background:#38a8df}
+.app{width:min(100%,620px);padding:calc(12px + env(safe-area-inset-top)) clamp(9px,3vw,22px) calc(26px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#ffffff10 0%,#ffecd333 50%,#ffe0b155 100%),url(assets/gif_1ad4b33fb1.gif);background-size:cover;background-position:center top;border-left:3px solid #f9d58caa;border-right:3px solid #f9d58caa;box-shadow:0 0 35px #104a6c77}
+.app>header{margin:4px 0 14px}
+.app h1{display:inline-block;margin:0 auto 5px;padding:10px 20px 9px;border:4px solid #6c3419;border-radius:23px;background:linear-gradient(165deg,#b76a32 0%,#8e421f 44%,#70321b 50%,#a4572b 100%);box-shadow:inset 0 3px #e8ad63,inset 0 -5px #5c2a17,0 6px 0 #522714,0 11px 18px #4a251761;color:#fff9e6;text-shadow:0 3px #713919,2px 2px #713919,-1px -1px #713919;font-size:clamp(1.5rem,6.1vw,2.35rem);letter-spacing:-.035em}
+.app h1 span{color:#ffd267;text-shadow:0 3px #93451b,1px 1px #93451b}
+.titlePaw{filter:drop-shadow(0 2px 1px #45220c)}
+.subtitle{display:table;margin:3px auto 0;padding:5px 14px;background:linear-gradient(#ffe8ae,#ddb479);border:2px solid #a46c39;border-radius:16px;color:#5c321c;font-weight:850;box-shadow:0 3px 0 #774322,0 5px 8px #4f2d2355}
+.hero{background:linear-gradient(#fffdf4,#f6e2b8);border:3px solid #be8051;border-radius:22px;padding:10px 13px;box-shadow:inset 0 2px #fff,0 5px 0 #814221,0 9px 15px #47291a66}
+.speech{font-weight:750;color:#4b352c;text-align:center}.heroHouse{filter:drop-shadow(0 3px 2px #8d4a2766)}
+.stats{gap:6px;margin:16px 0 8px}.stats span{flex:1;text-align:center;white-space:nowrap;background:linear-gradient(#fffdf3,#f8e6c9);border:2px solid #ad713f;border-radius:999px;box-shadow:inset 0 2px #fff,0 4px 0 #884b28;color:#163d57;font-size:clamp(.7rem,2.6vw,.92rem);font-weight:850;padding:7px 4px}
+.timebar{height:19px;padding:2px;background:#f9e2b0;border:3px solid #7a421d;box-shadow:inset 0 2px 5px #49230f77,0 3px #a76a37;border-radius:99px;margin:3px 4px 13px}.timebar>div{border-radius:99px;background:linear-gradient(#87f089,#27a667 48%,#09827e);box-shadow:inset 0 2px #ddff9e}.timebar.low>div{background:linear-gradient(#ffb76c,#e85639)}
+.chapterTrack{margin:8px 4px 12px;gap:3px}.chapterTrack span{height:6px;background:#ffe9bd;border:1px solid #ad7445}.chapterTrack .done{background:#e5a73c}.chapterTrack .current{background:#24b58c}
+.board{gap:2px;padding:11px;border:7px solid #733819;border-radius:27px;background:linear-gradient(135deg,#ab602b,#69321d);box-shadow:inset 0 0 0 4px #cc8740,inset 0 0 0 8px #5b2918,0 8px 0 #4b2315,0 14px 22px #3d28177a;overflow:hidden}
+.tile,.tile.ground,.tile.pipe{border:1px solid #c48f55;border-radius:5px;background:radial-gradient(circle at 18% 16%,#fff6d8 0 2%,transparent 3%),radial-gradient(circle at 78% 82%,#e5b977a0 0 2%,transparent 3%),linear-gradient(145deg,#ffeabf,#f5d195);box-shadow:inset 0 2px #fff6d7,inset 0 -3px #d7a769,0 1px 2px #683a1e88}
+.tile.start{background:linear-gradient(145deg,#eaffbe,#a4df82);box-shadow:inset 0 0 0 2px #65bb5e,inset 0 2px #fff,0 0 10px #97e96b}
+.tile.end{background:linear-gradient(145deg,#fff0c0,#ffd67c);box-shadow:inset 0 0 0 2px #ed9b2e,inset 0 2px #fff,0 0 10px #ffd36e}
+.routePath{stroke:#3599ce;stroke-width:25;stroke-linecap:butt;stroke-linejoin:round;filter:drop-shadow(0 2px 1px #12658c88)}.tile.connected .routePath{stroke:#3dbfd3}
+.tile .icon{filter:drop-shadow(0 2px 2px #3c2c2377)}.tile:not(:disabled):hover{filter:brightness(1.06)}
+.controls{margin:18px 0 12px;gap:8px}.controls button,.modal button,.lsClose{border:2px solid #124769;border-radius:15px;background:linear-gradient(#21a0ce,#09608c);color:#fff;box-shadow:inset 0 2px #81d8ee,0 5px 0 #164767,0 8px 11px #42302266;text-shadow:0 1px #17485e;font-size:clamp(.75rem,3vw,1rem);font-weight:900}
+.controls button.secondary{border-color:#a4471a;background:linear-gradient(#ffad52,#e87431);box-shadow:inset 0 2px #ffe19a,0 5px 0 #a94b1e,0 8px 11px #42302266;color:#fff}
+.controls button:active,.lsClose:active{transform:translateY(3px);box-shadow:inset 0 2px #89d6e6,0 2px 0 #164767}
+.message{display:grid;place-items:center;min-height:45px;padding:7px 10px;margin:10px 3px;background:linear-gradient(#fffdf1,#fbe6bf);border:2px solid #b67c4f;border-radius:15px;color:#214256;box-shadow:0 4px 0 #995e30;font-weight:800}
+.how{background:#fff6def0;border:2px solid #cb965b;box-shadow:0 4px 0 #8e5a36;color:#3f433b}
+.levelSelect{background:#125075df url(assets/gif_1ad4b33fb1.gif) center/cover fixed}.lsCard{background:linear-gradient(#fff6dc,#e9bc80);border:7px solid #773b1f;border-radius:25px;box-shadow:inset 0 0 0 3px #cc8649,0 12px 0 #4e271b,0 21px 30px #202e3d99}.lsHead h2{color:#743a20;text-shadow:0 1px #fff}.lsHead span{background:#fff8e7;border:2px solid #d9a366;color:#a3561b}
+.worldTab{border:2px solid #bf864e;background:linear-gradient(#fffdf1,#f3d39e);box-shadow:0 3px 0 #985e32;color:#52331d}.worldTab.sel{background:linear-gradient(#2f9ccc,#075d8d);color:white;border-color:#144d70;box-shadow:0 3px 0 #103c5b}.worldDesc{color:#5b3b29;font-weight:650}
+.lvBtn{background:linear-gradient(#218eb9,#08658e);border:2px solid #155377;box-shadow:inset 0 2px #61bee0,0 4px 0 #16445d}.lvBtn.cur{border-color:#ee9e43}.lsClose{background:linear-gradient(#fba15a,#d76a2f);border-color:#a44f27;box-shadow:inset 0 2px #ffd494,0 4px 0 #904319}
+.modal article{border:5px solid #9c5a31;background:linear-gradient(#fff7de,#efc78a);box-shadow:0 8px 0 #67361f,0 18px 35px #1b344690}
+@media(max-width:420px){.app{padding-left:8px;padding-right:8px}.board{padding:7px;border-width:5px;border-radius:20px}.stats span{padding:6px 2px}.controls{gap:5px}.controls button{padding:10px 4px}.hero{gap:6px;padding:8px}.speech{font-size:.82rem}}
+@media(prefers-reduced-motion:reduce){.tile,.controls button{transition:none}.crabSprite{animation:none}}
+</style><style id="integrated-board-brand-v8">
+.gameStage{position:relative;margin:10px auto 20px;padding:0 clamp(8px,2.3vw,16px) 18px;border:8px solid #743716;border-radius:28px;background:linear-gradient(90deg,#713616 0%,#bf7838 3%,#a55a2b 8%,#b76a31 50%,#a25527 93%,#d08b46 97%,#693015 100%);box-shadow:inset 0 0 0 3px #e3a858,inset 0 0 0 7px #814019,0 10px 0 #492411,0 20px 30px #1d354566;overflow:visible}
+.brandArt{display:block;aspect-ratio:1024/320;margin:-36px -8px -3px;background-image:url(assets/webp_02797cfd46.webp);background-position:top center;background-repeat:no-repeat;background-size:100% auto;filter:drop-shadow(0 7px 5px #5e361f66);pointer-events:none}
+.gameStage>header{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.gameStage .hero{margin:0 0 10px;padding:6px 12px;min-height:44px;border-radius:18px;background:linear-gradient(#fff8e7,#eac897);border:2px solid #9b582d;box-shadow:inset 0 2px #fff,0 3px #6e381d}
+.gameStage .hero .dog{display:none}.gameStage .hero .timeDog{width:52px;height:52px;background-size:208px 156px}
+.gameStage .hero .speech{font-size:clamp(.76rem,2.5vw,.92rem);font-weight:800;color:#53351e}.gameStage .hero .heroHouse{width:42px;height:42px;object-fit:contain}
+.gameStage .stats{margin:12px 0 8px}.gameStage .board{border-width:6px;margin:0 -2px;border-radius:21px;box-shadow:inset 0 0 0 3px #dd9d4d,0 5px 0 #5c2b14,0 9px 16px #42231499}
+.gameStage .controls{margin:17px 0 12px}.gameStage .message{margin-bottom:0}
+.gameStage .decor{pointer-events:none}
+@media(max-width:420px){.gameStage{margin-top:7px;padding:0 6px 14px;border-width:6px;border-radius:21px}.brandArt{margin-top:-24px;margin-left:-6px;margin-right:-6px}.gameStage .hero{min-height:38px;padding:4px 7px}.gameStage .hero .heroHouse{width:34px;height:34px}.gameStage .hero .timeDog{width:42px;height:42px;background-size:168px 126px}.gameStage .stats{margin-top:9px}.gameStage .board{border-width:5px}}
+</style><style id="sea-header-animation-v9">
+.app{background-position:center top;background-attachment:scroll}
+.gameStage{border:0;border-radius:0;background:transparent;box-shadow:none;padding:0;margin:2px auto 20px;width:100%;max-width:590px;overflow:visible}
+.brandArt{aspect-ratio:1024/310;width:100%;margin:0 auto -12px;background-position:top center;background-size:100% auto;background-repeat:no-repeat;border-radius:25px 25px 18px 18px;filter:drop-shadow(0 5px 5px #58321488);position:relative;z-index:2}
+.woodBody{position:relative;width:95%;margin:0 auto;padding:20px clamp(8px,2.4vw,16px) 18px;border:7px solid #723818;border-radius:24px;background:linear-gradient(90deg,#9b5127,#bc773b 7%,#ae612d 50%,#b96c33 93%,#88401e);box-shadow:inset 0 0 0 3px #dca159,inset 0 0 0 7px #85431f,0 9px 0 #4b2616,0 18px 27px #1839547b;z-index:1}
+.woodBody::before{content:"";position:absolute;top:5px;left:12px;right:12px;height:6px;border-radius:30px;background:#e8a760aa}
+.gameStage .hero{margin:0 0 12px;min-height:70px;background:linear-gradient(#fff9e9,#f1d4a5)}
+.gameStage .hero .dog{display:none!important}.woodBody .hero .timeDog{display:block;width:70px;height:70px;background-size:280px 210px;animation:dogBreathe 2.6s ease-in-out infinite;filter:drop-shadow(0 2px 3px #75432288)}
+.gameStage .hero .speech{text-align:left;line-height:1.2}.gameStage .hero .heroHouse{width:48px;height:48px}
+.gameStage .stats{margin-top:7px}.gameStage .board{margin:0 -2px}
+@media(max-width:420px){.gameStage{margin-top:0}.brandArt{margin-bottom:-9px;border-radius:16px 16px 12px 12px}.woodBody{width:96%;padding:14px 7px 13px;border-width:5px;border-radius:17px}.gameStage .hero{min-height:56px}.woodBody .hero .timeDog{width:56px;height:56px;background-size:224px 168px}.gameStage .hero .heroHouse{width:35px;height:35px}.gameStage .board{margin:0}}
+</style><style id="gfx-v10">
+/* ===== v10: integración de recursos gráficos ===== */
+.gameStage{position:relative}
+.gameStage .brandArt{aspect-ratio:900/597;width:min(84%,430px);margin:2px auto -4px;background-size:contain;background-position:center;border-radius:0;filter:drop-shadow(0 6px 6px #3b1d0c66);animation:logoBob 4s ease-in-out infinite}
+@keyframes logoBob{0%,100%{transform:translateY(0) rotate(-.6deg)}50%{transform:translateY(-4px) rotate(.6deg)}}
+.woodBody>header{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.woodBody{background:linear-gradient(#fff4dc70,#ffe5b850);border:0;box-shadow:none;padding-top:14px}
+.woodBody::before{display:none}
 
+/* Gaviotas */
+.sky{position:absolute;left:0;right:0;top:0;height:clamp(150px,42vw,250px);z-index:1;pointer-events:none;overflow:hidden}
+.gull{position:absolute;left:0;width:48px;height:48px;background:url(assets/webp_d1cdcb48c5.webp) 0 100%/400% 200% no-repeat;animation:gullFlap .56s steps(1) infinite,gullFly 17s linear infinite;filter:drop-shadow(0 3px 2px #1b4e6a44)}
+.gull.g1{top:6%}
+.gull.g2{top:30%;width:36px;height:36px;animation-duration:.5s,23s;animation-delay:0s,-9s}
+.gull.g3{top:14%;width:30px;height:30px;animation-duration:.62s,29s;animation-delay:0s,-19s;opacity:.9}
+@keyframes gullFlap{0%{background-position-x:0%}25%{background-position-x:33.333%}50%{background-position-x:66.667%}75%{background-position-x:100%}}
+@keyframes gullFly{0%{transform:translate(-60px,0)}25%{transform:translate(25vw,10px)}50%{transform:translate(50vw,-4px)}75%{transform:translate(75vw,8px)}100%{transform:translate(calc(100vw + 60px),0)}}
+@media(min-width:640px){@keyframes gullFly{0%{transform:translate(-60px,0)}100%{transform:translate(660px,6px)}}}
+
+/* HUD de madera */
+.hud{position:relative;container-type:inline-size;aspect-ratio:1100/269;margin:6px -6px 2px;background:url(assets/webp_7000753de2.webp) center/100% 100% no-repeat;filter:drop-shadow(0 5px 5px #4a25104d)}
+.hudTxt{position:absolute;top:29.8%;height:31.4%;display:flex;align-items:center;justify-content:center;color:#15375a;font-weight:950;letter-spacing:-.02em;white-space:nowrap;line-height:1;font-size:5.2cqw}
+.hLevel{left:18.7%;width:12.8%}
+.hMoves{left:42.1%;width:24.2%;font-size:5.4cqw}
+.hMoves.over{color:#c2411f}
+.hTime{left:79.6%;width:12.9%}
+.hLevel .levelWorldIcon{display:none}
+.hud .timebar{position:absolute;left:10.7%;width:78.9%;top:71.6%;height:19.4%;margin:0;padding:0;border:0;border-radius:99px;background:transparent;box-shadow:none;overflow:visible}
+.hud .timebar>div#timefill{height:100%;border-radius:99px;background:linear-gradient(#8af27a,#35c64a 45%,#16923a);box-shadow:inset 0 3px 0 #d7ff9f99,inset 0 -3px 0 #0b6b2a66}
+.hud .timebar.low>div#timefill{background:linear-gradient(#ffc36f,#f07a34 50%,#d8452c);box-shadow:inset 0 3px 0 #ffe2a699}
+.timeStar{position:absolute;left:50%;top:50%;width:14cqw;aspect-ratio:1;transform:translate(-50%,-52%);background:url(assets/webp_2857377868.webp) 33.333% 100%/400% 200% no-repeat;transition:filter .3s,opacity .3s;pointer-events:none}
+.timeStar.lost{filter:grayscale(1) brightness(.8);opacity:.55}
+.woodBody .chapterTrack{margin:2px 14% 10px}
+
+/* Tablero con marco de madera */
+.boardFrame{position:relative;margin:4px -7% 0;padding:19.9% 15.5% 12.5% 15.9%;background:var(--frame) center/100% 100% no-repeat;filter:drop-shadow(0 8px 8px #3f200e55);transition:filter .3s}
+
+.woodBody .boardFrame .board{margin:0;padding:1.3%;border:0;border-radius:6px;background:transparent;box-shadow:none;gap:1.3%;overflow:visible}
+.woodBody .boardFrame .tile,.woodBody .boardFrame .tile.ground,.woodBody .boardFrame .tile.pipe{background:var(--tile) center/100% 100% no-repeat!important;border:0!important;border-radius:10%!important;box-shadow:0 2px 0 #2c12066e!important;overflow:hidden}
+.woodBody .boardFrame .tile.start{box-shadow:inset 0 0 0 3px #5fcf62,inset 0 0 14px #b5ff9a,0 2px 0 #2c12066e!important}
+.woodBody .boardFrame .tile.end{box-shadow:inset 0 0 0 3px #f2a33a,inset 0 0 14px #ffe08a,0 2px 0 #2c12066e!important}
+.woodBody .boardFrame .tile.crabTarget{box-shadow:inset 0 0 0 3px #eb6334,0 0 12px #f08632!important}
+.woodBody .boardFrame .tile.devRoute{box-shadow:inset 0 0 0 2px #ec593d99,0 2px 0 #2c12066e!important}
+.woodBody .boardFrame .routePath{stroke:#2e93c9;filter:drop-shadow(0 2px 0 #1a5f8a)}
+.woodBody .boardFrame .tile.connected .routePath{stroke:#3fd0c9;filter:drop-shadow(0 2px 0 #13807c)}
+.woodBody .boardFrame .tile:not(:disabled):active{transform:scale(.92)}
+
+/* Cangrejo caminando en la arena */
+.woodBody .decor{position:relative}
+.woodBody .decor #crab{visibility:hidden}
+.crabWalker{position:absolute;bottom:0;left:6%;width:54px;height:54px;background:url(assets/webp_3e11778e45.webp) 0 0/400% 200% no-repeat;animation:crabSteps .5s steps(1) infinite,crabWalk 11s ease-in-out infinite;filter:drop-shadow(0 3px 2px #5a2d1a66)}
+@keyframes crabSteps{0%{background-position:0% 0}25%{background-position:33.333% 0}50%{background-position:66.667% 0}75%{background-position:33.333% 0}}
+@keyframes crabWalk{0%{left:4%;transform:scaleX(1)}45%{left:calc(96% - 54px);transform:scaleX(1)}50%{left:calc(96% - 54px);transform:scaleX(-1)}95%{left:4%;transform:scaleX(-1)}100%{left:4%;transform:scaleX(1)}}
+
+/* Estrellas de victoria */
+.modal .stars{position:relative;display:flex;justify-content:center;gap:4px;min-height:74px;margin:4px 0 2px;letter-spacing:0}
+.starImg{width:70px;height:70px;background:url(assets/webp_2857377868.webp) 33.333% 100%/400% 200% no-repeat;filter:grayscale(1) brightness(.75);opacity:.4;transform:scale(.85)}
+.starImg.on{filter:none;opacity:1;transform:scale(0);animation:starPop .45s cubic-bezier(.3,1.6,.5,1) forwards}
+.starImg:nth-child(2){margin-top:-10px}
+@keyframes starPop{to{transform:scale(1)}}
+.burst{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;background:url(assets/webp_2857377868.webp) 100% 0/400% 200% no-repeat;opacity:0;z-index:-1;animation:burst 1.1s ease-out .9s forwards;pointer-events:none}
+@keyframes burst{0%{opacity:0;transform:scale(.4) rotate(0)}40%{opacity:.95}100%{opacity:0;transform:scale(1.5) rotate(25deg)}}
+
+@media(prefers-reduced-motion:reduce){.gull,.crabWalker,.gameStage .brandArt,.burst{animation:none}.gull{display:none}.starImg.on{animation:none;transform:none}}
+.hMoves small{font-size:.72em;opacity:.75;margin-left:2px;font-weight:850}
+.gameStage .brandArt{position:relative;z-index:2}
+/* ===== v11: arte por mundo ===== */
+body{--bg:url(assets/webp_9732488a29.webp);--frame:url(assets/webp_0473548c31.webp);--tile:url(assets/webp_d0ce2df7ea.webp)}
+body[data-world=puerto]{--bg:url(assets/webp_a403748896.webp);--frame:url(assets/webp_8d12084e87.webp);--tile:url(assets/webp_187b6523fa.webp)}
+body[data-world=dunas]{--bg:url(assets/webp_f332c88845.webp);--frame:url(assets/webp_460d7d8197.webp);--tile:url(assets/webp_23f682adc2.webp)}
+body[data-world=cerro]{--bg:url(assets/webp_279a42fdf1.webp);--frame:url(assets/webp_dbed082317.webp);--tile:url(assets/webp_38cfad8db2.webp)}
+.app{background-image:linear-gradient(180deg,#ffffff00 0%,#ffffff00 45%,#ffe7c255 100%),var(--bg)!important;background-size:cover!important;background-position:center top!important;overflow-x:clip}
+.levelSelect{background:#12507599 var(--bg) center/cover no-repeat!important}
+body.worldSwap .app{animation:worldIn .8s ease-out}
+body.worldSwap .boardFrame{animation:framePop .6s cubic-bezier(.3,1.5,.5,1)}
+@keyframes worldIn{from{filter:brightness(1.35) saturate(.7)}to{filter:none}}
+@keyframes framePop{from{transform:scale(.9);opacity:.3}to{transform:none;opacity:1}}
+
+/* Fauna voladora (tira de 4 cuadros: 0 posado, 1-3 vuelo) */
+.sky{height:clamp(170px,46vw,270px)}
+.sky .gull{display:none}
+.fly{position:absolute;left:0;display:none;width:60px;aspect-ratio:1;background:var(--spr) 33.333% 0/400% 100% no-repeat;filter:drop-shadow(0 4px 3px #1b4e6a40);animation:flap .6s steps(1) infinite,flyAcross 18s linear infinite}
+.fly.big{width:96px}.fly.mid{width:66px}.fly.small{width:46px;opacity:.95}
+.fly.glide{animation:flapSlow 1.6s steps(1) infinite,soar 26s ease-in-out infinite}
+@keyframes flap{0%{background-position-x:33.333%}33%{background-position-x:66.667%}66%{background-position-x:100%}}
+@keyframes flapSlow{0%,60%{background-position-x:66.667%}70%{background-position-x:33.333%}85%{background-position-x:100%}}
+@keyframes flyAcross{0%{transform:translate(-90px,0)}30%{transform:translate(30vw,12px)}60%{transform:translate(60vw,-6px)}100%{transform:translate(calc(100vw + 90px),6px)}}
+@keyframes soar{0%{transform:translate(-110px,30px) rotate(4deg)}25%{transform:translate(22vw,-4px) rotate(-3deg)}50%{transform:translate(48vw,22px) rotate(3deg)}75%{transform:translate(74vw,0) rotate(-4deg)}100%{transform:translate(calc(100vw + 110px),26px) rotate(2deg)}}
+@media(min-width:640px){@keyframes flyAcross{0%{transform:translate(-90px,0)}100%{transform:translate(700px,8px)}}@keyframes soar{0%{transform:translate(-110px,30px)}50%{transform:translate(300px,4px)}100%{transform:translate(720px,26px)}}}
+.fly.d1{top:2%}.fly.d2{top:58%;animation-delay:0s,-8s}.fly.d3{top:18%;animation-duration:.7s,31s;animation-delay:0s,-19s}
+.sp-gull{--spr:url(assets/webp_d4fcd08796.webp)}.sp-tern{--spr:url(assets/webp_947682a529.webp)}.sp-pelican{--spr:url(assets/webp_4e13e7bea1.webp)}.sp-vulture{--spr:url(assets/webp_091a49085c.webp)}
+body[data-world=costa] .w-costa,body[data-world=puerto] .w-puerto,body[data-world=dunas] .w-dunas,body[data-world=cerro] .w-cerro{display:block}
+
+/* Animal posado sobre el marco */
+.perch{position:absolute;z-index:4;right:10%;top:-4.5%;width:17%;aspect-ratio:1;display:none;background:var(--spr) 0 0/400% 100% no-repeat;filter:drop-shadow(0 4px 3px #3b1d0c66);animation:perchIdle 9s steps(1) infinite,perchBob 3s ease-in-out infinite;transform-origin:bottom center;pointer-events:none}
+@keyframes perchIdle{0%,86%{background-position-x:0}88%,94%{background-position-x:33.333%}96%,100%{background-position-x:0}}
+@keyframes perchBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px) rotate(-2deg)}}
+body[data-world=puerto] .perch{right:auto;left:24%;top:-8%;width:18%}
+
+/* Pulpo en el agua del puerto */
+.octo{position:absolute;bottom:-4px;right:6%;width:70px;aspect-ratio:1;display:none;background:url(assets/webp_9cba989cd6.webp) 0 0/400% 100% no-repeat;filter:drop-shadow(0 4px 3px #5a2d1a66);animation:octoFrames 2.4s steps(1) infinite,octoSwim 14s ease-in-out infinite}
+@keyframes octoFrames{0%{background-position-x:0}25%{background-position-x:33.333%}50%{background-position-x:66.667%}75%{background-position-x:100%}}
+@keyframes octoSwim{0%,100%{right:6%;transform:translateY(0) scaleX(-1)}45%{right:calc(94% - 70px);transform:translateY(-6px) scaleX(-1)}50%{right:calc(94% - 70px);transform:translateY(0) scaleX(1)}95%{right:6%;transform:translateY(-6px) scaleX(1)}}
+body[data-world=puerto] .octo{display:block}
+.crabWalker{display:none}body[data-world=costa] .crabWalker{display:block}
+body[data-world=puerto] .decor img{visibility:hidden}
+@media(prefers-reduced-motion:reduce){.fly,.perch,.octo{animation:none}.fly{display:none!important}}
+</style><style id="cover-v11">.homeScreen{background:#0c435aee}.homeCard{width:min(100%,calc(94dvh * 0.528));height:auto;aspect-ratio:912/1728;max-height:94dvh;border:0;border-radius:18px;background:#008dcc}.coverArt{width:100%;height:100%;object-fit:fill}.homeActions{position:absolute;inset:0;padding:0;background:none;pointer-events:none}.homeActions p,.homeActions small{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.homeActions button{position:absolute;left:15%;top:82.6%;width:70%;height:8.8%;padding:0;margin:0;opacity:0;pointer-events:auto;cursor:pointer}.homeActions button:focus-visible{opacity:.25;outline:4px solid #fff;outline-offset:2px}@media(max-height:700px){.homeCard{height:auto}.homeActions{padding:0}}</style><style id="intro-video-style">#introVideoScreen[hidden]{display:none}#introVideoScreen{position:fixed;inset:0;z-index:50;background:#082639;display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}#introVideoScreen video{width:100%;height:100%;max-width:min(100vw,540px);max-height:100dvh;object-fit:contain}#skipIntro,#replayIntro{position:absolute;z-index:2;border:2px solid #ffe6ac;border-radius:999px;background:#8c451be8;color:#fff6dc;font:800 1rem system-ui,sans-serif;padding:10px 18px;cursor:pointer;box-shadow:0 4px 0 #4d280d}#skipIntro{right:max(16px,env(safe-area-inset-right));top:calc(16px + env(safe-area-inset-top))}#replayIntro{bottom:calc(24px + env(safe-area-inset-bottom))}#replayIntro[hidden]{display:none}</style><style id="game-audio-style">#titleMusicToggle{position:absolute;z-index:3;right:5%;top:25%;border:2px solid #ffe2a8;border-radius:999px;background:#89421cdb;color:#fff4d5;font:800 .85rem system-ui,sans-serif;padding:8px 12px;box-shadow:0 3px 0 #50250f;cursor:pointer}</style><style id="v14">
+/* ===== v14 ===== */
+#titleMusicToggle{top:2%!important;right:3%!important;font-size:.78rem;padding:6px 10px}
+.tile.spin .routeSvg{animation:tileSpin .2s cubic-bezier(.3,1.5,.6,1)}
+@keyframes tileSpin{from{transform:rotate(-90deg) scale(.92)}to{transform:none}}
+.board{position:relative}
+.walker{position:absolute;left:0;top:0;z-index:7;pointer-events:none;will-change:transform}
+.walker img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 3px #3b1d0c88);animation:walkBob .2s ease-in-out infinite alternate}
+@keyframes walkBob{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-12%) rotate(4deg)}}
+.tile.leaving .dogIcon{opacity:0;transition:opacity .15s}
+.woodBody .boardFrame .tile.walked .routePath{stroke:#ffc53d!important;filter:drop-shadow(0 0 5px #ffae00) drop-shadow(0 2px 0 #b86b00)!important;transition:stroke .2s}
+.tile.arrived .houseIcon{animation:housePop .6s cubic-bezier(.3,1.8,.5,1)}
+@keyframes housePop{0%{transform:translate(-50%,-50%) scale(1)}40%{transform:translate(-50%,-50%) scale(1.35)}100%{transform:translate(-50%,-50%) scale(1)}}
+/* Ajustes */
+.settingsCard{max-width:340px;text-align:left}
+.settingsCard h2{text-align:center;margin:0 0 14px}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 4px;border-bottom:1px solid #d9b07a;font-weight:800;color:#4b2d18;cursor:pointer}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw i{flex:none;width:52px;height:30px;border-radius:99px;background:#c9b49a;position:relative;transition:background .2s;box-shadow:inset 0 2px 3px #0003}
+.sw i::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 3px #0004;transition:transform .2s}
+.sw input:checked+i{background:#27a667}.sw input:checked+i::after{transform:translateX(22px)}
+.sw input:focus-visible+i{outline:3px solid #fd703b;outline-offset:2px}
+.settingsCard .row{display:flex;gap:8px;margin-top:16px}
+.settingsCard .row button{flex:1}
+.settingsCard button.ghost{background:linear-gradient(#fffdf1,#f3d39e)!important;color:#5c321c!important;border-color:#bf864e!important;text-shadow:none!important;box-shadow:0 3px 0 #985e32!important}
+@media(prefers-reduced-motion:reduce){.tile.spin .routeSvg,.walker img,.tile.arrived .houseIcon{animation:none}}
+.lsSettings{margin-top:8px!important;background:linear-gradient(#fffdf1,#f3d39e)!important;color:#5c321c!important;border-color:#bf864e!important;box-shadow:0 3px 0 #985e32!important}</style><style id="v15">:root{--fx:url(assets/webp_2857377868.webp)}
+/* ===== v15: huesos + mundo completado ===== */
+.boneIco{display:inline-block;width:1.5em;height:1.5em;vertical-align:-.45em;background:var(--fx) 0 0/400% 200% no-repeat}
+.boneCount{flex:none;display:inline-flex;align-items:center;gap:2px;padding:3px 9px 3px 4px;border-radius:99px;background:linear-gradient(#fffdf3,#f8e6c9);border:2px solid #ad713f;box-shadow:inset 0 2px #fff,0 3px 0 #884b28;color:#5c321c;font-weight:950;font-size:.95rem}
+.boneCount .boneIco{width:34px;height:34px;margin:-4px -2px;vertical-align:middle}
+.boneCount.bump{animation:bump .35s cubic-bezier(.3,1.8,.5,1)}.boneCount.shake{animation:shake .4s}
+@keyframes bump{50%{transform:scale(1.25)}}@keyframes shake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.tile .bone{position:absolute;z-index:4;left:50%;top:50%;width:92%;aspect-ratio:1;transform:translate(-50%,-50%);background:var(--fx) 0 0/400% 200% no-repeat;pointer-events:none;filter:drop-shadow(0 2px 1px #5c2d0f88);animation:boneBob 1.6s ease-in-out infinite}
+.tile .bone.lit{background-position:33.333% 0;animation:boneBob 1.6s ease-in-out infinite,boneGlow 1s ease-in-out infinite alternate}
+.tile .bone.old{opacity:.4;filter:grayscale(.6)}
+.tile .bone.pop{background-position:100% 0;animation:bonePop .5s ease-out forwards}
+@keyframes boneBob{0%,100%{transform:translate(-50%,-50%) rotate(-8deg)}50%{transform:translate(-50%,-60%) rotate(8deg)}}
+@keyframes boneGlow{to{filter:drop-shadow(0 0 6px #ffd23f) brightness(1.1)}}
+@keyframes bonePop{from{transform:translate(-50%,-50%) scale(1);opacity:1}to{transform:translate(-50%,-50%) scale(1.8);opacity:0}}
+.boneFly{position:fixed;z-index:60;pointer-events:none;background:var(--fx) 33.333% 0/400% 200% no-repeat;filter:drop-shadow(0 0 6px #ffd23f)}
+#hint .cost{display:inline-flex;align-items:center;margin-left:2px;padding:0 5px 0 7px;border-radius:99px;background:#0000002e;font-size:.8em}
+#hint .cost .boneIco{width:20px;height:20px}
+.worldTab small+small{display:block}
+/* Mundo completado */
+.worldDone{position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;padding:16px;background:#0c3b52cc var(--bg) center/cover;overflow:hidden}
+.worldDone[hidden]{display:none}
+.worldDone::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 38%,#fff6 0,#fff0 45%),linear-gradient(#0c3b5233,#0c3b52aa)}
+.wdCard{position:relative;width:min(100%,400px);text-align:center;padding:18px 18px 16px;border:6px solid #773b1f;border-radius:26px;background:linear-gradient(#fff7de,#efc78a);box-shadow:inset 0 0 0 3px #cc8649,0 10px 0 #4e271b,0 22px 40px #0008;animation:wdIn .6s cubic-bezier(.3,1.5,.5,1)}
+@keyframes wdIn{from{transform:scale(.6) rotate(-3deg);opacity:0}}
+.wdKicker{margin:0;font-weight:950;color:#b86e22;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem}
+.wdCard h2{margin:2px 0 4px;color:#12587a;font-size:1.8rem;letter-spacing:-.02em}
+.wdStage{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:4px;min-height:150px;margin:0 -6px;background:radial-gradient(ellipse at 50% 90%,#ffe6a8 0 40%,#fff0 70%)}
+.wdDog{width:120px;height:120px;object-fit:contain;animation:wdJump 1s ease-in-out infinite;filter:drop-shadow(0 5px 4px #5c2d0f55)}
+.wdAnimal{width:140px;aspect-ratio:1;background:var(--spr) 33.333% 0/400% 100% no-repeat;animation:flap .7s steps(1) infinite,wdHover 2.4s ease-in-out infinite;filter:drop-shadow(0 5px 4px #0004)}
+.wdAnimal.small{width:62px;animation:flap .7s steps(1) infinite,wdHover 2s ease-in-out infinite}
+.wdAnimal.small:nth-of-type(2){animation-delay:0s,-.5s}.wdAnimal.small:nth-of-type(3){animation-delay:0s,-1s}
+.wdAnimal.sp-octo{--spr:url(assets/webp_9cba989cd6.webp);animation:octoFrames 2.4s steps(1) infinite,wdHover 2.2s ease-in-out infinite}
+@keyframes wdJump{0%,100%{transform:translateY(0)}40%{transform:translateY(-18px) rotate(-5deg)}60%{transform:translateY(-18px) rotate(5deg)}}
+@keyframes wdHover{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.wdStats{display:flex;justify-content:center;gap:10px;margin:8px 0}
+.wdStats span{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:99px;background:#fff9e8;border:2px solid #d9a366;color:#5c321c;font-size:1.05rem}
+.wdStats b{color:#b86e22;font-size:1.2rem}.wdStats .boneIco{width:30px;height:30px}
+.wdFact{margin:8px 0;padding:10px 12px;border-radius:14px;background:#ffffffb8;border:2px dashed #d39a2d;color:#3f433b;font-size:.88rem;line-height:1.35;text-align:left}
+.wdFact strong{display:block;color:#12587a;margin-bottom:2px}
+.wdNext{margin:8px 0 12px;font-size:.85rem;color:#5b3b29;font-weight:700}
+.wdNext span{display:block;color:#27a667;font-weight:950;text-transform:uppercase;font-size:.75rem;letter-spacing:.05em}
+.wdNext div{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}.wdNext b{font-size:1.1rem;color:#12587a}
+.wdBtns{display:flex;gap:8px}.wdBtns button{flex:1;border:2px solid #124769;border-radius:15px;padding:12px 8px;background:linear-gradient(#21a0ce,#09608c);color:#fff;font-weight:900;font-size:1rem;box-shadow:inset 0 2px #81d8ee,0 5px 0 #164767;cursor:pointer}
+.wdBtns button.ghost{flex:0 0 38%;background:linear-gradient(#fffdf1,#f3d39e);color:#5c321c;border-color:#bf864e;box-shadow:0 4px 0 #985e32}
+.wdBtns button[hidden]{display:none}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:2}
+.confetti i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall linear infinite}
+@keyframes fall{to{top:105%;transform:rotate(720deg) translateX(30px)}}
+@media(prefers-reduced-motion:reduce){.tile .bone,.wdDog,.wdAnimal,.confetti i,.wdCard{animation:none!important}}
+</style><style id="v16">
+/* ===== v16: tutorial + obstáculos ===== */
+#tutLayer{position:fixed;inset:0;z-index:35;pointer-events:none}
+#tutLayer[hidden]{display:none}
+#tutBubble{position:fixed;left:50%;transform:translateX(-50%);width:min(92vw,400px);display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:18px;background:#fffbef;border:3px solid #f2a33a;box-shadow:0 6px 0 #b86e22,0 12px 24px #0005;color:#3f2a1a;font-size:.95rem;line-height:1.3;pointer-events:auto;animation:bubIn .35s cubic-bezier(.3,1.6,.5,1)}
+#tutBubble img{width:48px;height:48px;object-fit:contain;flex:none}
+#tutBubble p{margin:0;flex:1}
+#tutBtn{flex:none;border:2px solid #124769;border-radius:12px;padding:9px 12px;background:linear-gradient(#21a0ce,#09608c);color:#fff;font-weight:900;box-shadow:0 3px 0 #164767;cursor:pointer}
+#tutBtn[hidden]{display:none}
+@keyframes bubIn{from{transform:translateX(-50%) scale(.7);opacity:0}}
+#tutHand{position:fixed;z-index:36;font-size:52px;line-height:1;pointer-events:none;filter:drop-shadow(0 4px 3px #0007);transition:left .45s cubic-bezier(.4,0,.2,1),top .45s cubic-bezier(.4,0,.2,1);animation:tap 1.1s ease-in-out infinite}
+#tutHand[hidden]{display:none}
+#tutHand::after{content:"";position:absolute;left:10px;top:-8px;width:30px;height:30px;border-radius:50%;border:3px solid #fff;opacity:0;animation:ripple 1.1s ease-out infinite}
+@keyframes tap{0%,100%{transform:translateY(12px)}45%{transform:translateY(0) scale(.92)}55%{transform:translateY(0) scale(.92)}}
+@keyframes ripple{45%{opacity:0;transform:scale(.3)}55%{opacity:.9}100%{opacity:0;transform:scale(1.4)}}
+.woodBody .boardFrame .tile.tutTarget{z-index:5;box-shadow:0 0 0 4px #ffd23f,0 0 18px 6px #ffd23fcc!important;animation:tutPulse 1.1s ease-in-out infinite}
+@keyframes tutPulse{50%{box-shadow:0 0 0 6px #fff4b0,0 0 26px 10px #ffd23f!important}}
+/* Tinta */
+.tile .ink{position:absolute;inset:-4%;z-index:5;pointer-events:none;background:radial-gradient(circle at 35% 40%,#2a1740 0 30%,transparent 31%),radial-gradient(circle at 62% 58%,#2a1740 0 34%,transparent 35%),radial-gradient(circle at 70% 25%,#2a1740 0 12%,transparent 13%),radial-gradient(circle at 22% 75%,#2a1740 0 11%,transparent 12%),radial-gradient(circle at 48% 50%,#3b2358 0 42%,transparent 43%);filter:drop-shadow(0 1px 0 #6d4a99)}
+.tile.splash .ink{animation:splat .35s cubic-bezier(.3,1.7,.5,1)}
+@keyframes splat{from{transform:scale(.2);opacity:.2}}
+.octo.squirt{animation:octoFrames .4s steps(1) infinite,squirt 1.2s ease-in-out!important}
+@keyframes squirt{30%{transform:translateY(-40px) scale(1.2)}60%{transform:translateY(-30px) scale(1.25)}}
+body[data-world=puerto] .decor{overflow:visible}
+/* Arena */
+.tile .sand{position:absolute;inset:0;z-index:5;pointer-events:none;background:repeating-linear-gradient(-12deg,#e9c27a 0 6px,#f2d49a 6px 12px),#ecc987;box-shadow:inset 0 3px 6px #a8742f77;border-radius:10%}
+.tile.sandIn .sand{animation:sandIn .5s ease-out both;animation-delay:var(--d,0ms)}
+@keyframes sandIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.boardFrame.storm::after{content:"";position:absolute;inset:-4%;z-index:6;pointer-events:none;border-radius:20px;background:repeating-linear-gradient(-10deg,#f0c77a00 0 18px,#e7b86499 18px 22px,#f0c77a00 22px 44px),linear-gradient(90deg,#e7b86400,#e7b864aa 40%,#e7b864aa 60%,#e7b86400);background-size:200% 100%,200% 100%;animation:storm 1.6s linear forwards}
+@keyframes storm{0%{opacity:0;background-position:120% 0,120% 0}20%{opacity:1}80%{opacity:1}100%{opacity:0;background-position:-120% 0,-120% 0}}
+/* Rocas */
+.tile .rockImg{position:absolute;z-index:5;left:50%;top:52%;width:98%;height:98%;object-fit:contain;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 3px 2px #3b1d0c99)}
+.tile.rocked .routeSvg{opacity:.35}
+.tile .crack{position:absolute;z-index:6;inset:18%;pointer-events:none;background:linear-gradient(60deg,transparent 46%,#2b1a10 47% 50%,transparent 51%),linear-gradient(-35deg,transparent 47%,#2b1a10 48% 51%,transparent 52%);opacity:.8}
+.tile.hit .rockImg{animation:rockHit .3s}
+.tile.broke{animation:broke .45s ease-out}
+@keyframes rockHit{25%{transform:translate(-56%,-50%) rotate(-6deg)}75%{transform:translate(-44%,-50%) rotate(6deg)}}
+@keyframes broke{30%{filter:brightness(1.6)}}
+@media(prefers-reduced-motion:reduce){#tutHand,#tutHand::after,.tile.tutTarget,.boardFrame.storm::after{animation:none}}
+</style><style id="v17">/* ===== v17: lagartija en Las Dunas ===== */
+body[data-world=dunas] #bean{display:none!important}
+.lizWalker{position:absolute;bottom:2px;left:4%;width:96px;display:none;filter:drop-shadow(0 4px 2px #5a2d1a55);animation:lizWalk 10s ease-in-out infinite;pointer-events:none}
+body[data-world=dunas] .lizWalker{display:block}
+.lizSvg{display:block;width:100%;height:auto;overflow:visible}
+.lzLeg,.lzTail,.lzHead{transform-box:fill-box}
+.lzLeg.l1{transform-origin:100% 100%}.lzLeg.l2{transform-origin:0 100%}.lzLeg.l3{transform-origin:100% 0}.lzLeg.l4{transform-origin:0 0}
+.lzTail{transform-origin:100% 50%;animation:lzTail .5s ease-in-out infinite alternate}
+.lzLeg.l1,.lzLeg.l4{animation:lzLegA .26s ease-in-out infinite alternate}
+.lzLeg.l2,.lzLeg.l3{animation:lzLegB .26s ease-in-out infinite alternate}
+.lzHead{transform-origin:0 50%;animation:lzHead 1.3s ease-in-out infinite}
+@keyframes lzLegA{from{transform:rotate(-22deg)}to{transform:rotate(18deg)}}
+@keyframes lzLegB{from{transform:rotate(18deg)}to{transform:rotate(-22deg)}}
+@keyframes lzTail{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+@keyframes lzHead{0%,70%,100%{transform:rotate(0)}80%{transform:rotate(-8deg)}90%{transform:rotate(6deg)}}
+@keyframes lizWalk{0%{left:4%;transform:scaleX(1)}30%{left:calc(96% - 96px);transform:scaleX(1)}40%{left:calc(96% - 96px);transform:scaleX(1)}42%{left:calc(96% - 96px);transform:scaleX(-1)}58%{left:45%;transform:scaleX(-1)}64%{left:45%;transform:scaleX(-1)}88%{left:4%;transform:scaleX(-1)}96%{left:4%;transform:scaleX(-1)}98%,100%{left:4%;transform:scaleX(1)}}
+.crabSprite.lizOnTile{background:none!important;width:96%!important;height:auto!important;animation:lizTap .3s ease-in-out infinite alternate!important;filter:drop-shadow(0 3px 2px #5a2d1a88)}
+@keyframes lizTap{from{transform:translate(-50%,-55%) rotate(-10deg)}to{transform:translate(-50%,-45%) rotate(10deg)}}
+@media(prefers-reduced-motion:reduce){.lizWalker,.lzLeg,.lzTail,.lzHead,.crabSprite.lizOnTile{animation:none!important}}
+</style><style id="v18">:root{--liz:url(assets/webp_977bec425f.webp)}/* ===== v18: lagartija pintada + sin grano de café ===== */
+#bean{display:none!important}
+.lizWalker{width:112px;aspect-ratio:240/168;bottom:0}
+.lizWalker .lizSvg{display:none}
+.lizWalker i{position:absolute;inset:0;background:var(--liz) 0 0/600% 100% no-repeat}
+.lizWalker .lzWalk{animation:lzWalkF .52s steps(1) infinite,lzShowWalk 10s steps(1) infinite}
+.lizWalker .lzIdle{opacity:0;animation:lzIdleF 1.4s steps(1) infinite,lzShowIdle 10s steps(1) infinite}
+@keyframes lzWalkF{0%{background-position-x:0}25%{background-position-x:20%}50%{background-position-x:40%}75%{background-position-x:20%}}
+@keyframes lzIdleF{0%{background-position-x:60%}80%{background-position-x:100%}}
+@keyframes lzShowWalk{0%{opacity:1}30%{opacity:0}42%{opacity:1}58%{opacity:0}64%{opacity:1}88%{opacity:0}98%{opacity:1}}
+@keyframes lzShowIdle{0%{opacity:0}30%{opacity:1}42%{opacity:0}58%{opacity:1}64%{opacity:0}88%{opacity:1}98%{opacity:0}}
+@keyframes lizWalk{0%{left:3%;transform:scaleX(1)}30%{left:calc(97% - 112px);transform:scaleX(1)}41.9%{left:calc(97% - 112px);transform:scaleX(1)}42%{left:calc(97% - 112px);transform:scaleX(-1)}58%{left:45%;transform:scaleX(-1)}64%{left:45%;transform:scaleX(-1)}88%{left:3%;transform:scaleX(-1)}97.9%{left:3%;transform:scaleX(-1)}98%,100%{left:3%;transform:scaleX(1)}}
+.crabSprite.lizOnTile{width:118%!important;aspect-ratio:240/168;height:auto!important;background:var(--liz) 80% 0/600% 100% no-repeat!important}
+@media(prefers-reduced-motion:reduce){.lizWalker i{animation:none!important}.lizWalker .lzIdle{display:none}}
+</style><style id="v20">
+.woodBody .hero{margin:14px 0 0;min-height:64px;padding:8px 12px}
+.woodBody .hero .speech{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;text-align:left}
+.woodBody .hero #story{font-size:clamp(.82rem,3.4vw,.98rem);font-weight:900;color:#4b2d18;line-height:1.15}
+.woodBody .hero .message{all:unset;display:block;font-size:clamp(.74rem,3.1vw,.88rem);font-weight:700;color:#5c3a20;line-height:1.25}
+</style><style id="v22">:root{--spider:url(assets/webp_3bcf27c668.webp)}/* ===== v22 ===== */
+#rock,#cactus{display:none!important}
+.spiderWalker{position:absolute;bottom:0;left:4%;width:100px;aspect-ratio:220/123;display:none;pointer-events:none;filter:drop-shadow(0 4px 2px #3b1d0c66);animation:spWalk 12s ease-in-out infinite}
+body[data-world=cerro] .spiderWalker{display:block}
+.spiderWalker i{position:absolute;inset:0;background:var(--spider) 0 0/400% 100% no-repeat;animation:spFrames .48s steps(1) infinite}
+@keyframes spFrames{0%{background-position-x:0}25%{background-position-x:33.333%}50%{background-position-x:66.667%}75%{background-position-x:100%}}
+@keyframes spWalk{0%{left:4%;transform:scaleX(1)}35%{left:calc(96% - 100px);transform:scaleX(1)}45%{left:calc(96% - 100px);transform:scaleX(1) translateY(-4px)}47%{left:calc(96% - 100px);transform:scaleX(-1)}82%{left:4%;transform:scaleX(-1)}92%{left:4%;transform:scaleX(-1) translateY(-4px)}94%,100%{left:4%;transform:scaleX(1)}}
+.tile .spiderOnTile{position:absolute;z-index:7;left:50%;top:50%;width:112%;aspect-ratio:220/123;transform:translate(-50%,-50%);pointer-events:none;background:var(--spider) 0 0/400% 100% no-repeat;filter:drop-shadow(0 3px 2px #0007);animation:spFrames .3s steps(1) infinite,spDrop .45s cubic-bezier(.3,1.5,.5,1)}
+@keyframes spDrop{from{transform:translate(-50%,-160%)}}
+.tile .web{position:absolute;inset:-2%;z-index:6;pointer-events:none;opacity:.92;filter:drop-shadow(0 1px 1px #0005)}
+.tile .web svg{width:100%;height:100%;display:block}
+.tile.webIn .web{animation:webIn .45s ease-out}
+@keyframes webIn{from{transform:scale(.3) rotate(-40deg);opacity:0}}
+.tile.webbed{filter:saturate(.7)}
+.tile.webShake{animation:webShake .3s}
+@keyframes webShake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){.spiderWalker,.spiderWalker i,.tile .spiderOnTile{animation:none!important}}
+</style></head><body><section id="homeScreen" class="homeScreen" aria-label="Inicio del juego"><div class="homeCard"><img id="coverArt" class="coverArt" alt="Portada de Turron Go Home: Turrón busca su casita"><button id="titleMusicToggle" type="button" aria-label="Escuchar música de portada">♪ Música</button><div class="homeActions"><p>¡Ayuda a Turrón a volver a su casita!</p><button id="playButton" aria-label="Jugar Turrón Go Home">JUGAR</button><small>48 niveles · 4 mundos · Mejillones, Chile</small></div></div></section><section id="introVideoScreen" hidden aria-label="Video de introducción"><video id="introVideo" playsinline preload="auto" disablepictureinpicture><source src="assets/intro.mp4" type="video/mp4">Tu navegador no puede reproducir este video.</video><button id="skipIntro" type="button">Saltar ›</button><button id="replayIntro" type="button" hidden>▶ Reproducir</button></section><main class="app"><div class="gameStage"><div class="sky" aria-hidden="true"><i class="fly mid d1 sp-gull w-costa"></i><i class="fly small d2 sp-tern w-costa"></i><i class="fly small d3 sp-gull w-costa"></i><i class="fly big glide d1 sp-pelican w-puerto"></i><i class="fly mid d2 sp-gull w-puerto"></i><i class="fly small d3 sp-gull w-puerto"></i><i class="fly big glide d1 sp-vulture w-dunas"></i><i class="fly small glide d3 sp-vulture w-dunas"></i><i class="fly big glide d1 sp-vulture w-cerro"></i><i class="fly small d2 sp-tern w-cerro"></i><i class="fly small glide d3 sp-pelican w-cerro"></i></div><div class="brandArt" role="img" aria-label="Turrón Go Home! Una aventura de caminos en Mejillones, con Turrón asomado al tablero"></div><div class="woodBody"><header><h1><i class="titlePaw" aria-hidden="true"></i> Turrón <span>Go Home!</span></h1><p class="subtitle">Una aventura de caminos en Mejillones</p></header><div class="hud"><span id="levelLabel" class="hudTxt hLevel">1-1</span><span id="movesLabel" class="hudTxt hMoves">Giros: 0</span><span id="timeLabel" class="hudTxt hTime">90 s</span><div class="timebar" id="timebar" role="progressbar" aria-label="Tiempo restante" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="timefill"></div><i id="timeStar" class="timeStar" title="Estrella por tiempo"></i></div></div><div id="chapterTrack" class="chapterTrack" aria-label="Progreso de niveles"></div><div class="boardFrame"><i class="perch sp-tern w-costa" aria-hidden="true"></i><i class="perch sp-pelican w-puerto" aria-hidden="true"></i><i class="perch sp-vulture w-dunas" aria-hidden="true"></i><i class="perch sp-vulture w-cerro" aria-hidden="true"></i><div class="board" id="board" role="grid" aria-label="Tablero de caminos"></div></div><div class="decor" aria-hidden="true"><img id="rock"><img id="cactus"><img id="crab"><img id="bean"><i class="crabWalker"></i><i class="spiderWalker"><i></i></i><i class="lizWalker"><i class="lzWalk"></i><i class="lzIdle"></i></i><i class="octo"></i></div><div class="controls"><button id="reset">↺ Reiniciar</button><button id="hint" class="secondary">💡 Pista</button><button id="map" aria-label="Mapa de niveles" style="flex:0 0 52px">🗺️</button><button id="sound" aria-label="Ajustes" style="flex:0 0 52px">⚙️</button></div><div class="hero" id="hero"><div id="timeDog" class="timeDog" role="img" aria-label="Turrón persigue su cola"></div><img class="dog" id="heroDog" alt="Turrón corriendo"><div class="speech"><b id="story">¡Ayúdame a volver a casa!</b><p id="message" class="message" role="status">Gira las piezas para encontrar el camino.</p></div><span id="boneCount" class="boneCount" title="Huesos recogidos" aria-label="Huesos"><i class="boneIco"></i><b>0</b></span><img class="heroHouse" id="heroHouse" alt="Casita de Turrón"></div></div></div><div id="devPanel" class="devPanel" hidden><p id="devInfo"></p><div><button id="devPrev">◀ Variante</button><button id="devNext">Variante ▶</button><button id="devSolve">✔ Resolver</button></div></div><details class="how"><summary>¿Cómo se juega?</summary><p>Parte desde Turrón y conecta las piezas hasta su casita. Toca una losa para girarla; Turrón y la casita son piezas fijas. La barra muestra el tiempo que queda.</p></details></main><section id="levelSelect" class="levelSelect" hidden aria-label="Mapa de niveles"><div class="lsCard"><header class="lsHead"><h2>Mapa de Mejillones</h2><span id="lsTotal">★ 0</span></header><div id="worldTabs" class="worldTabs"></div><p id="worldDesc" class="worldDesc"></p><div id="levelGrid" class="levelGrid"></div><button id="lsClose" class="lsClose">Volver al nivel</button><button id="lsSettings" class="lsClose lsSettings">⚙️ Ajustes</button><label class="devToggle"><input type="checkbox" id="devMode"> Modo revisión: desbloquea todo y muestra datos del generador</label><div id="devTools" class="devTools" hidden><p>L = largo del camino · C = curvas · G = giros mínimos · v = variante elegida</p><button id="devExportBtn">📋 Exportar variantes elegidas</button><button id="devResetProgress">Borrar progreso</button><textarea id="devExport" hidden readonly rows="2"></textarea></div></div></section><div id="tutLayer" hidden><div id="tutBubble" role="status"><img id="tutDog" alt=""><p id="tutText"></p><button id="tutBtn" type="button">¡Vamos!</button></div></div><div id="tutHand" hidden aria-hidden="true">👆</div><section id="worldDone" class="worldDone" hidden aria-label="Mundo completado" aria-live="polite"><div class="wdCard"><div id="wdConfetti" class="confetti" aria-hidden="true"></div><p id="wdKicker" class="wdKicker"></p><h2 id="wdTitle"></h2><div id="wdStage" class="wdStage"></div><div class="wdStats"><span id="wdStars"></span><span id="wdBones"></span></div><div id="wdFact" class="wdFact"></div><div id="wdNext" class="wdNext"></div><div class="wdBtns"><button id="wdMap" class="ghost">🗺️ Mapa</button><button id="wdGo">Continuar →</button></div></div></section><div id="settings" class="modal" hidden style="z-index:40"><article class="settingsCard"><h2>Ajustes</h2><label class="sw"><span>🎵 Música</span><input type="checkbox" id="optMusic"><i></i></label><label class="sw"><span>🔔 Efectos de sonido</span><input type="checkbox" id="optFx"><i></i></label><label class="sw"><span>📳 Vibración</span><input type="checkbox" id="optVib"><i></i></label><div class="row"><button id="optIntro" class="ghost">🎬 Intro</button><button id="optTut" class="ghost">👆 Tutorial</button><button id="optClose">Listo</button></div></article></div><div id="win" class="modal" hidden><article><div id="victoryScene" class="victoryScene" hidden><img id="victoryDog" alt="Turrón celebra y se sienta"><img id="victoryHouse" alt="La casita se ilumina"></div><h2 id="winTitle">¡Lo lograste!</h2><div id="stars" class="stars" hidden aria-label="Estrellas obtenidas"></div><p id="winText"></p><button id="next">Siguiente nivel →</button><p class="muted" id="winFoot"></p></article></div><script>
+(()=>{'use strict';const COVER='assets/webp_d9d65f61ac.webp';document.querySelector('#coverArt').src=COVER;const DOG='assets/webp_466679037d.webp';const HOUSE='assets/webp_4dc4750cea.webp';const TILES=[];const DOG_FRAMES=['assets/webp_2615661e2b.webp', 'assets/webp_10a0786848.webp', 'assets/webp_7321f1966b.webp', 'assets/webp_f012e87f48.webp', 'assets/webp_9275b300ed.webp', 'assets/webp_83c5426323.webp', 'assets/webp_bfdfe2be26.webp', 'assets/webp_66e690f2e7.webp'];const HOUSE_FRAMES=['assets/webp_55acb33c84.webp', 'assets/webp_e8e4134d25.webp', 'assets/webp_5f1a252127.webp', 'assets/webp_1730dbafaa.webp'];const CACTUS='assets/webp_7737d6f27a.webp';const PROPS={'rock': 'assets/webp_b5f7049cbd.webp', 'crab': 'assets/webp_2182dab483.webp', 'bean': 'assets/webp_56056d740e.webp'};document.querySelector('#heroDog').src=DOG;document.querySelector('#heroHouse').src=HOUSE;['rock','crab','bean'].forEach(id=>document.querySelector('#'+id).src=PROPS[id]);document.querySelector('#cactus').src=CACTUS;const dirs=[[0,-1],[1,0],[0,1],[-1,0]];
+/* ================= GENERADOR DE NIVELES ================= */
+const GEN_VERSION=1, PER_WORLD=12;
+const WORLDS=[
+ {id:'costa', name:'La Costa', icon:'🌊', size:5, len:[5,8],  turns:[0,3],  tees:0,   time:90,  desc:'Primeros pasos junto al mar. Caminos cortos y pocas curvas.'},
+ {id:'puerto',name:'El Puerto',icon:'⚓', size:5, len:[7,11], turns:[2,5],  tees:.15, time:100, desc:'Rutas más largas entre muelles y botes. Desde el nivel 4, ¡cuidado con la tinta del pulpo!'},
+ {id:'dunas', name:'Las Dunas',icon:'🏜️',size:6, len:[9,15], turns:[4,8],  tees:.25, time:120, desc:'Más curvas y piezas trampa. Una lagartija inquieta gira losas y, desde el nivel 3, llegan las tormentas de arena.'},
+ {id:'cerro', name:'Cerro San Luciano',icon:'⛰️',size:7,len:[12,20],turns:[6,12],tees:.35,time:150,desc:'El gran desafío: rutas largas, rocas que hay que romper y una araña que pega losas con su telaraña.'}];
+const TOTAL=WORLDS.length*PER_WORLD;
+const TITLES=[
+ ['La primera huella','Arena tibia','Conchitas en fila','Olas tranquilas','Gaviotas curiosas','Entre rocas y cangrejos','La caleta','Marea baja','Pozas de mar','Atardecer en la playa','El faro a lo lejos','Rumbo al puerto'],
+ ['Camino a la Capitanía','Los colores del puerto','Botes de pescadores','El muelle histórico','Redes y boyas','Un paseo frente al mar','Lobos marinos','La feria del pescado','Grúas y contenedores','El secreto de la bahía','Luces del muelle','Hacia el desierto'],
+ ['Las dunas del desierto','Viento de la pampa','Huellas en la arena','Cactus solitario','Buscando granos de café','Espejismo','Piedras del camino','El sol de mediodía','Noche estrellada','Sendero de piedras','Tormenta de arena','Al pie del cerro'],
+ ['Rumbo al cerro San Luciano','La subida','Mirador de la bahía','Senderos cruzados','Rocas gigantes','Nubes bajas','El atajo','Casi en la cima','La cumbre','Bajando al pueblo','La calle de casa','¡De vuelta en casa!']];
+const BAKED_VARIANTS={}; // {índice: variante} elegidas en modo revisión
+const STRAIGHT=m=>m===5||m===10, DECOY2=[3,5,6,9,10,12,3,6,9,12], TEES=[7,11,13,14];
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(arr,r){for(let i=arr.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function rotate(mask,k){k=((k%4)+4)%4;return ((mask<<k)|(mask>>(4-k)))&15}
+function maskFor(path,i){let m=0;for(const p of [path[i-1],path[i+1]])if(p){const dx=p[0]-path[i][0],dy=p[1]-path[i][1];m|=1<<dirs.findIndex(v=>v[0]===dx&&v[1]===dy)}return m}
+function countTurns(path){let t=0;for(let i=1;i<path.length-1;i++){const a=path[i-1],b=path[i],c=path[i+1];if((b[0]-a[0])!==(c[0]-b[0])||(b[1]-a[1])!==(c[1]-b[1]))t++}return t}
+function genPath(N,L,tMin,tMax,r){
+ for(let attempt=0;attempt<300;attempt++){
+  const sy=Math.floor(r()*N),ey=Math.floor(r()*N),md=(N-1)+Math.abs(ey-sy);
+  if(L-1<md||((L-1-md)&1))continue;
+  const path=[[0,sy]],used=new Set([sy*N]);let budget=5000,res=null;
+  const dfs=(x,y)=>{if(res||--budget<0)return;
+   if(path.length===L){if(x===N-1&&y===ey){const t=countTurns(path);if(t>=tMin&&t<=tMax)res=path.map(p=>p.slice())}return}
+   if(Math.abs(N-1-x)+Math.abs(ey-y)>L-path.length)return;
+   for(const d of shuffle([0,1,2,3],r)){const xx=x+dirs[d][0],yy=y+dirs[d][1];if(xx<0||yy<0||xx>=N||yy>=N)continue;const k=yy*N+xx;if(used.has(k))continue;if(xx===N-1&&yy===ey&&path.length+1<L)continue;
+    used.add(k);path.push([xx,yy]);dfs(xx,yy);path.pop();used.delete(k);if(res)return}};
+  dfs(0,sy);if(res)return res}
+ return null}
+function reach(tiles,N,start,end){const seen=new Set([start]),q=[start];while(q.length){const k=q.shift(),x=k%N,y=Math.floor(k/N);for(let d=0;d<4;d++){if(!(tiles[k].mask&(1<<d)))continue;const xx=x+dirs[d][0],yy=y+dirs[d][1];if(xx<0||xx>=N||yy<0||yy>=N)continue;const v=yy*N+xx;if(!(tiles[v].mask&(1<<((d+2)%4)))||seen.has(v))continue;seen.add(v);q.push(v)}}return{seen,won:seen.has(end)}}
+const levelCache=new Map();
+function buildLevel(idx,variant=0){
+ const ck=idx+':'+variant;if(levelCache.has(ck))return levelCache.get(ck);
+ const w=Math.floor(idx/PER_WORLD),li=idx%PER_WORLD,W=WORLDS[w],N=W.size,t=li/(PER_WORLD-1);
+ const seed=GEN_VERSION*1000003+(w+1)*100003+(li+1)*7919+variant*104729,r=mulberry(seed);
+ let L=Math.round(W.len[0]+t*(W.len[1]-W.len[0]))+Math.floor(r()*3)-1;L=Math.max(N,Math.min(N*N-2,L));
+ const tc=Math.round(W.turns[0]+t*(W.turns[1]-W.turns[0]));
+ let path=null;
+ for(const [dl,tlo,thi] of [[0,tc-1,tc+1],[1,tc-1,tc+1],[-1,tc-1,tc+1],[0,0,99],[1,0,99],[-1,0,99],[2,0,99]]){path=genPath(N,Math.max(N,L+dl),Math.max(0,tlo),thi,r);if(path)break}
+ const tiles=Array.from({length:N*N},()=>({mask:r()<W.tees?TEES[Math.floor(r()*4)]:DECOY2[Math.floor(r()*DECOY2.length)],route:false}));
+ const start=path[0][1]*N+path[0][0],end=path.at(-1)[1]*N+path.at(-1)[0];
+ path.forEach((p,i)=>{const ideal=maskFor(path,i),k=p[1]*N+p[0];const edge=i===0||i===path.length-1;let s=edge?0:(STRAIGHT(ideal)?1:1+Math.floor(r()*3));tiles[k]={mask:rotate(ideal,s),route:true,ideal,fixed:edge}});
+ for(let g=0;g<20&&reach(tiles,N,start,end).won;g++){const i=1+Math.floor(r()*(path.length-2)),k=path[i][1]*N+path[i][0];tiles[k].mask=rotate(tiles[k].mask,1)}
+ let par=0;path.forEach((p,i)=>{if(i===0||i===path.length-1)return;const tl=tiles[p[1]*N+p[0]];for(let k=0;k<4;k++)if(rotate(tl.mask,k)===tl.ideal){par+=k;break}});
+ const lvl={idx,w,li,N,path,start,end,init:tiles.map(x=>({...x})),par,turns:countTurns(path),len:path.length,time:W.time,seed,variant,title:TITLES[w][li]};
+ levelCache.set(ck,lvl);return lvl}
+window.TurronGen={buildLevel,TOTAL,WORLDS,reach,rotate};
+
+/* ================= PROGRESO ================= */
+function load(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}}
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+let progress=load('turronProgress',null);
+if(!progress){progress={stars:{}};const old=Number(load('turronBest',0))||0;for(let i=0;i<Math.min(old,TOTAL);i++)progress.stars[i]=1;store('turronProgress',progress)}
+let variants=load('turronVariants',{}),devMode=!!load('turronDev',false);
+const starsOf=i=>progress.stars[i]||0, totalStars=()=>Object.values(progress.stars).reduce((a,b)=>a+b,0);
+const unlocked=i=>devMode||i===0||starsOf(i-1)>0;
+const variantOf=i=>variants[i]??BAKED_VARIANTS[i]??0;
+
+/* ================= JUEGO ================= */
+const $=s=>document.querySelector(s),board=$('#board');
+let idx=0,L=null,N=5,moves=0,tiles=[],solved=false,timer=null,remaining=0,totalTime=0,soundOn=true,audioCtx=null,celebrationTimer=null,winTimeout=null,gameStarted=false,lastWin=false,selWorld=0;
+const GAME_MUSIC={"portada": "assets/musica_portada.mp3", "costa": "assets/musica_costa.mp3", "puerto": "assets/musica_puerto.mp3", "desierto": "assets/musica_desierto.mp3", "cerros": "assets/musica_cerros.mp3"};const GAME_FX={"victoria": "assets/sonido_victoria.mp3", "giro_losa": "assets/sonido_giro_losa.mp3", "cangrejo": "assets/sonido_cangrejo.mp3"};
+/* ===== v14: audio con Web Audio (loops sin corte, pausa en segundo plano, música/efectos separados) ===== */
+const SETTINGS_KEY='turronSettings';
+let settings=Object.assign({music:true,fx:true,vib:true},(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY))||{}}catch{return{}}})());
+function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch{}}
+let actx=null,musicSrc=null,musicGain=null,musicKey='',musicToken=0;const bufCache={};
+function ac(){if(!actx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;actx=new C()}if(actx.state==='suspended'&&!document.hidden)actx.resume().catch(()=>{});return actx}
+function decode(uri){if(bufCache[uri])return bufCache[uri];const a=ac();if(!a)return Promise.reject();bufCache[uri]=fetch(uri).then(r=>r.arrayBuffer()).then(ab=>new Promise((res,rej)=>a.decodeAudioData(ab,res,rej))).then(b=>{const d=b.getChannelData(0),th=.002,max=Math.floor(b.sampleRate*.15);let s=0,e=d.length-1;while(s<max&&Math.abs(d[s])<th)s++;while(d.length-1-e<max&&e>s&&Math.abs(d[e])<th)e--;return{buf:b,ls:s/b.sampleRate,le:(e+1)/b.sampleRate}});return bufCache[uri]}
+function fadeOut(src,g){if(!src)return;try{const t=actx.currentTime;g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);g.gain.linearRampToValueAtTime(0,t+.45);src.stop(t+.5)}catch{}}
+function stopMusic(){musicToken++;fadeOut(musicSrc,musicGain);musicSrc=null;musicGain=null;musicKey=''}
+function setMusic(key){if(!settings.music||!GAME_MUSIC[key])return;if(key===musicKey&&musicSrc)return;const a=ac();if(!a)return;stopMusic();musicKey=key;const tok=musicToken;
+ decode(GAME_MUSIC[key]).then(m=>{if(tok!==musicToken||!settings.music)return;const src=a.createBufferSource(),g=a.createGain();src.buffer=m.buf;src.loop=true;src.loopStart=m.ls;src.loopEnd=m.le;g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(.24,a.currentTime+.9);src.connect(g).connect(a.destination);src.start(0,m.ls);musicSrc=src;musicGain=g}).catch(()=>{})}
+function playFx(key,vol){if(!settings.fx||!GAME_FX[key])return;const a=ac();if(!a)return;decode(GAME_FX[key]).then(m=>{const s=a.createBufferSource(),g=a.createGain();s.buffer=m.buf;g.gain.value=vol??(key==='giro_losa'?.55:.7);s.connect(g).connect(a.destination);s.start(0,m.ls)}).catch(()=>{})}
+function preloadAudio(){Object.values(GAME_FX).forEach(u=>decode(u).catch(()=>{}))}
+/* Efectos sintetizados provisorios (reemplazables: si existe GAME_FX[tipo] se usa el archivo) */
+function tone(a,{f=440,f2=null,type='triangle',t=0,d=.15,v=.08,q=null}){const o=a.createOscillator(),g=a.createGain(),t0=a.currentTime+t;o.type=type;o.frequency.setValueAtTime(f,t0);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t0+d);g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+.012);g.gain.exponentialRampToValueAtTime(.0001,t0+d);let n=o;if(q){const fl=a.createBiquadFilter();fl.type='lowpass';fl.frequency.value=q;o.connect(fl);n=fl}n.connect(g).connect(a.destination);o.start(t0);o.stop(t0+d+.02)}
+function synth(type){if(!settings.fx)return;if(GAME_FX[type]){playFx(type);return}const a=ac();if(!a)return;try{switch(type){
+ case'lose':tone(a,{f:392,f2:330,d:.22,v:.09});tone(a,{f:330,f2:262,t:.2,d:.25,v:.09});tone(a,{f:262,f2:196,t:.42,d:.5,v:.1,q:1400});break;
+ case'hint':[1047,1319,1568].forEach((f,i)=>tone(a,{f,type:'sine',t:i*.07,d:.25,v:.05}));break;
+ case'star':{const n=synth.starN=(synth.starN||0)%3;tone(a,{f:[784,988,1175][n],type:'sine',d:.3,v:.09});tone(a,{f:[1568,1976,2349][n],type:'sine',t:.02,d:.2,v:.03});synth.starN=n+1;break}
+ case'tick':tone(a,{f:1760,type:'square',d:.04,v:.025,q:3000});break;
+ case'click':tone(a,{f:660,f2:520,type:'sine',d:.06,v:.05});break;
+ case'step':tone(a,{f:300+Math.random()*80,f2:180,type:'sine',d:.07,v:.035});break;
+ case'unlock':[523,659,784,1047].forEach((f,i)=>tone(a,{f,t:i*.11,d:.35,v:.08}));tone(a,{f:1319,type:'sine',t:.46,d:.6,v:.06});break;
+ case'bone':tone(a,{f:988,type:'sine',d:.08,v:.07});tone(a,{f:1480,type:'sine',t:.07,d:.16,v:.07});break;case'bubble':[0,.12,.22].forEach((t,i)=>tone(a,{f:300+i*120,f2:600+i*150,type:'sine',t,d:.1,v:.05}));break;case'splat':noise(a,{d:.25,v:.25,f:700});tone(a,{f:180,f2:60,type:'sine',d:.2,v:.1});break;case'wind':noise(a,{d:1.4,v:.12,f:900,swell:true});break;case'wipe':noise(a,{d:.14,v:.12,f:3000,hp:true});break;case'crack':noise(a,{d:.09,v:.25,f:1800});tone(a,{f:140,f2:90,type:'square',d:.08,v:.05,q:800});break;case'break':noise(a,{d:.35,v:.3,f:1200});[0,.06,.12].forEach(t=>tone(a,{f:120,f2:60,type:'triangle',t,d:.12,v:.08}));break;case'scurry':[0,.07,.14,.21,.28].forEach(t=>noise(a,{t,d:.04,v:.08,f:2500,hp:true}));break;case'web':tone(a,{f:900,f2:1400,type:'sine',d:.25,v:.04});tone(a,{f:1200,f2:700,type:'sine',t:.15,d:.3,v:.035});noise(a,{t:.05,d:.3,v:.04,f:4000,hp:true});break;case'bark':tone(a,{f:520,f2:300,type:'sawtooth',d:.09,v:.05,q:1800});tone(a,{f:560,f2:320,type:'sawtooth',t:.13,d:.09,v:.05,q:1800});break}}catch{}}
+function noise(a,{t=0,d=.2,v=.1,f=1000,hp=false,swell=false}){const n=Math.floor(a.sampleRate*d),b=a.createBuffer(1,n,a.sampleRate),c=b.getChannelData(0);for(let i=0;i<n;i++)c[i]=Math.random()*2-1;const s=a.createBufferSource(),fl=a.createBiquadFilter(),g=a.createGain(),t0=a.currentTime+t;s.buffer=b;fl.type=hp?'highpass':'lowpass';fl.frequency.value=f;g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(v,t0+(swell?d*.45:.01));g.gain.exponentialRampToValueAtTime(.0001,t0+d);s.connect(fl).connect(g).connect(a.destination);s.start(t0);s.stop(t0+d+.02)}
+function buzz(ms){if(settings.vib&&navigator.vibrate)try{navigator.vibrate(ms)}catch{}}
+function sound(type){if(type==='turn'){playFx('giro_losa');return}if(type==='win'){playFx('victoria');return}synth(type)}
+function musicKeyFor(w){return['costa','puerto','desierto','cerros'][w]}
+document.addEventListener('visibilitychange',()=>{const v=document.querySelector('#introVideo');if(document.hidden){if(actx&&actx.state==='running')actx.suspend().catch(()=>{});if(v&&!v.paused){v.pause();v.dataset.resume='1'}}else{if(actx)actx.resume().catch(()=>{});if(v&&v.dataset.resume){delete v.dataset.resume;v.play().catch(()=>{})}}});
+document.addEventListener('pointerdown',function once(){ac();preloadAudio();document.removeEventListener('pointerdown',once)},{once:true});
+
+/* ===== v14: Turrón recorre el camino al ganar ===== */
+let walkToken=0;
+function walkCells(){const par=new Map([[L.start,-1]]),q=[L.start];while(q.length){const k=q.shift();if(k===L.end)break;const x=k%N,y=Math.floor(k/N);for(let d=0;d<4;d++){if(!(tiles[k].mask&(1<<d)))continue;const xx=x+dirs[d][0],yy=y+dirs[d][1];if(xx<0||yy<0||xx>=N||yy>=N)continue;const v=yy*N+xx;if(!(tiles[v].mask&(1<<((d+2)%4)))||par.has(v))continue;par.set(v,k);q.push(v)}}const p=[];let c=L.end;while(c!==undefined&&c!==-1){p.push(c);c=par.get(c)}return p.reverse()}
+function runWalk(done){const tok=++walkToken;const reduced=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;const cells=walkCells();
+ if(reduced||cells.length<2||!board.children[cells[0]]){cells.forEach(k=>collectBone(k));done();return}
+ const br=board.getBoundingClientRect(),cw=board.children[0].getBoundingClientRect().width,size=cw*.86;
+ const pts=cells.map(k=>{const r=board.children[k].getBoundingClientRect();return[r.left-br.left+r.width/2-size/2,r.top-br.top+r.height/2-size/2]});
+ const w=document.createElement('div');w.className='walker';w.style.width=w.style.height=size+'px';w.innerHTML='<img alt="" src="'+DOG+'">';board.append(w);
+ board.children[L.start].classList.add('leaving');
+ let dir=1;const kf=pts.map((p,i)=>{const n=pts[Math.min(i+1,pts.length-1)],pr=pts[Math.max(i-1,0)],dx=(i<pts.length-1?n[0]-p[0]:p[0]-pr[0]);if(dx)dir=dx<0?-1:1;return{transform:`translate(${p[0]}px,${p[1]}px) scaleX(${dir})`,offset:i/(pts.length-1)}});
+ const dur=Math.min(3400,Math.max(1000,cells.length*190));
+ $('#message').textContent='¡Turrón va camino a casa!';
+ const an=w.animate(kf,{duration:dur,easing:'linear',fill:'forwards'});
+ cells.forEach((k,i)=>setTimeout(()=>{if(tok!==walkToken)return;board.children[k]?.classList.add('walked');collectBone(k);if(i&&i<cells.length-1)synth('step')},dur*i/(cells.length-1)));
+ an.onfinish=()=>{if(tok!==walkToken)return;board.children[L.end]?.classList.add('arrived');sound('win');synth('bark');buzz([20,40,30]);setTimeout(()=>{if(tok!==walkToken)return;w.remove();done()},650)}}
+
+function isPaused(){return document.hidden||!$('#levelSelect').hidden||!$('#settings').hidden||!$('#introVideoScreen').hidden||!$('#worldDone').hidden||tut.on}let lastTick=99;
+function critter(){return L&&L.w===2?'La lagartija':'El cangrejo'}
+
+/* ===== v16: tutorial guiado + obstáculos por mundo ===== */
+const tut={on:false,step:0,taps:0},coach={on:false,k:-1,timer:null};let forceTut=false;
+function lsGet(k){try{return localStorage.getItem(k)}catch{return null}}function lsSet(k,v){try{localStorage.setItem(k,v)}catch{}}
+const seenObs=(()=>{try{return JSON.parse(lsGet('turronSeenObs'))||{}}catch{return{}}})();
+function markSeen(k){seenObs[k]=1;lsSet('turronSeenObs',JSON.stringify(seenObs))}
+function tileRect(k){const el=board.children[k];return el?el.getBoundingClientRect():null}
+function placeHand(k){const h=$('#tutHand'),r=tileRect(k);if(!r){h.hidden=true;return}h.hidden=false;h.style.left=(r.left+r.width/2-26)+'px';h.style.top=(r.top+r.height/2-6)+'px'}
+function placeBubble(){const bb=$('#tutBubble'),fr=document.querySelector('.boardFrame').getBoundingClientRect(),h=bb.offsetHeight;let top=fr.top-h-6;if(top<8)top=Math.min(fr.bottom+6,innerHeight-h-8);bb.style.top=Math.max(8,top)+'px'}
+function clearMarks(){board.querySelectorAll('.tutTarget').forEach(e=>e.classList.remove('tutTarget'))}
+function setBubble(text,btn){$('#tutText').innerHTML=text;$('#tutBtn').hidden=!btn;if(btn)$('#tutBtn').textContent=btn;$('#tutLayer').hidden=false;placeBubble()}
+let handAlt=null;
+function layerUpdate(){clearInterval(handAlt);clearMarks();
+ if(tut.on){if(tut.step===0){setBubble('¡Hola! Soy <b>Turrón</b> 🐶 y quiero volver a mi casita 🏠. ¡Ayúdame a conectar el camino desde mí hasta ella!','¡Vamos!');[L.start,L.end].forEach(k=>board.children[k]?.classList.add('tutTarget'));let a=0;placeHand(L.start);handAlt=setInterval(()=>{a^=1;placeHand(a?L.end:L.start)},1300);return}
+  let k=-1;for(let i=1;i<L.path.length-1;i++){const c=L.path[i][1]*N+L.path[i][0];if(tiles[c].mask!==tiles[c].ideal){k=c;break}}
+  if(k<0){endTutorial(true);$('#message').textContent='¡Perfecto! Mira cómo Turrón corre a casa…';return}
+  board.children[k].classList.add('tutTarget');placeHand(k);
+  const bone=L.bones&&L.bones.includes(k);
+  setBubble(bone?'¡Esta losa tiene un <b>hueso</b> 🦴! Gírala: Turrón lo recogerá cuando pase corriendo.':tut.taps===0?'<b>Toca la losa marcada</b> para girarla. Sigue tocando hasta que el camino azul quede conectado.':'¡Muy bien! 👏 Ahora <b>esta otra</b>.');return}
+ if(coach.on){board.children[coach.k]?.classList.add('tutTarget');if(coach.noHand)$('#tutHand').hidden=true;else placeHand(coach.k);placeBubble()}}
+function startTutorial(){if(!L||L.idx!==0)return;tut.on=true;tut.step=0;tut.taps=0;document.querySelector('.boardFrame').scrollIntoView({block:'center',behavior:'smooth'});setTimeout(layerUpdate,350)}
+function endTutorial(done){if(done)lsSet('turronTutorial','1');tut.on=false;clearInterval(handAlt);clearMarks();if(!coach.on){$('#tutLayer').hidden=true;$('#tutHand').hidden=true}}
+function showCoach(text,k,ms,noHand){if(tut.on)return;coach.on=true;coach.k=k;coach.noHand=!!noHand;setBubble(text,null);layerUpdate();clearTimeout(coach.timer);coach.timer=setTimeout(hideCoach,ms||4000)}
+function hideCoach(){coach.on=false;clearTimeout(coach.timer);clearMarks();if(!tut.on){$('#tutLayer').hidden=true;$('#tutHand').hidden=true}}
+$('#tutDog').src=DOG;
+$('#tutBtn').onclick=()=>{synth('click');tut.step=1;layerUpdate()};
+addEventListener('resize',()=>{if(tut.on||coach.on)layerUpdate()});addEventListener('scroll',()=>{if(tut.on||coach.on){const k=tut.on?null:coach.k;if(tut.on)layerUpdate();else{if(!coach.noHand)placeHand(k);placeBubble()}}},{passive:true});
+
+/* --- Obstáculos --- */
+let obsT=0,obsCount=0,obsBusy=null;
+function obstacleKind(){if(!L)return null;if(L.w===3)return'web';if(L.w===1&&L.li>=3)return'ink';if(L.w===2&&L.li>=2)return'sand';return null}
+function rocksFor(lv){if(lv.rocks)return lv.rocks;bonesFor(lv);lv.rocks=[];if(lv.w!==3)return lv.rocks;const r=mulberry(lv.seed^0x20CC5);const inner=[];for(let i=2;i<lv.path.length-2;i++){const k=lv.path[i][1]*lv.N+lv.path[i][0];if(!(lv.bones||[]).includes(k))inner.push(i)}shuffle(inner,r);const want=lv.li<4?1:2,pick=[];for(const i of inner){if(pick.length>=want)break;if(pick.every(j=>Math.abs(j-i)>=3))pick.push(i)}
+ lv.rocks=pick.map(i=>lv.path[i][1]*lv.N+lv.path[i][0]);const route=new Set(lv.path.map(p=>p[1]*lv.N+p[0]));const dec=[];for(let k=0;k<lv.N*lv.N;k++)if(!route.has(k))dec.push(k);shuffle(dec,r);lv.rocks.push(...dec.slice(0,lv.li>=6?2:1));return lv.rocks}
+const WEB_SVG="<svg viewBox=\"0 0 100 100\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linejoin=\"round\" opacity=\".95\"><line x1=\"50\" y1=\"50\" x2=\"102.0\" y2=\"50.0\"/><line x1=\"50\" y1=\"50\" x2=\"86.8\" y2=\"86.8\"/><line x1=\"50\" y1=\"50\" x2=\"50.0\" y2=\"102.0\"/><line x1=\"50\" y1=\"50\" x2=\"13.2\" y2=\"86.8\"/><line x1=\"50\" y1=\"50\" x2=\"-2.0\" y2=\"50.0\"/><line x1=\"50\" y1=\"50\" x2=\"13.2\" y2=\"13.2\"/><line x1=\"50\" y1=\"50\" x2=\"50.0\" y2=\"-2.0\"/><line x1=\"50\" y1=\"50\" x2=\"86.8\" y2=\"13.2\"/><polygon points=\"61.9,51.8 57.1,59.7 48.2,61.9 40.3,57.1 38.1,48.2 42.9,40.3 51.8,38.1 59.7,42.9\"/><polygon points=\"71.8,53.3 63.1,67.7 46.7,71.8 32.3,63.1 28.2,46.7 36.9,32.3 53.3,28.2 67.7,36.9\"/><polygon points=\"81.6,54.8 69.0,75.8 45.2,81.6 24.2,69.0 18.4,45.2 31.0,24.2 54.8,18.4 75.8,31.0\"/><polygon points=\"91.5,56.3 74.9,83.8 43.7,91.5 16.2,74.9 8.5,43.7 25.1,16.2 56.3,8.5 83.8,25.1\"/></g><g fill=\"none\" stroke=\"#c9d3dd\" stroke-width=\".7\"><line x1=\"50\" y1=\"50\" x2=\"102.0\" y2=\"50.0\"/><line x1=\"50\" y1=\"50\" x2=\"86.8\" y2=\"86.8\"/><line x1=\"50\" y1=\"50\" x2=\"50.0\" y2=\"102.0\"/><line x1=\"50\" y1=\"50\" x2=\"13.2\" y2=\"86.8\"/><line x1=\"50\" y1=\"50\" x2=\"-2.0\" y2=\"50.0\"/><line x1=\"50\" y1=\"50\" x2=\"13.2\" y2=\"13.2\"/><line x1=\"50\" y1=\"50\" x2=\"50.0\" y2=\"-2.0\"/><line x1=\"50\" y1=\"50\" x2=\"86.8\" y2=\"13.2\"/></g></svg>";
+/* ===== v22: araña de Cerro San Luciano (telarañas) ===== */
+const webWarn=new Set();
+function webAttack(){const cand=routeInner().filter(k=>!tiles[k].rock&&!(tiles[k].web>0));if(!cand.length)return;const n=L.li>=6?2:1,tg=[];while(tg.length<n&&cand.length)tg.push(cand.splice(Math.floor(Math.random()*cand.length),1)[0]);
+ tg.forEach(k=>webWarn.add(k));$('#message').textContent='¡Cuidado! La araña está tejiendo una telaraña…';synth('scurry');render();
+ obsBusy=setTimeout(()=>{obsBusy=null;tg.forEach(k=>webWarn.delete(k));if(solved||!L){render();return}tg.forEach(k=>tiles[k].web=5000);synth('web');buzz([15,25,15]);render();tg.forEach(k=>board.children[k]?.classList.add('webIn'));
+  $('#message').textContent='¡Telaraña! Esa losa no se puede girar por 5 segundos.';
+  if(!seenObs.web){markSeen('web');showCoach('La <b>araña</b> tejió una <b>telaraña</b>: esta losa queda pegada y no se puede girar por 5 segundos. ¡Gira otras mientras tanto!',tg[0],5000,true)}},1400)}
+
+function applyObstacles(){webWarn.clear();obsT=0;obsCount=0;clearTimeout(obsBusy);obsBusy=null;rocksFor(L).forEach(k=>{if(tiles[k])tiles[k].rock=2});
+ if(L.rocks.length&&!tut.on){const k=L.rocks[0];setTimeout(()=>{if(!seenObs.rock&&L&&L.rocks.includes(k)&&tiles[k].rock){markSeen('rock');showCoach('¡Una <b>roca</b> bloquea esta losa! Tócala <b>2 veces</b> para romperla y luego podrás girarla.',k,5500)}},700)}}
+function obstacleTick(delta){if(!L||solved)return;let ch=false;tiles.forEach(t=>{if(t.web>0){t.web-=delta;if(t.web<=0){t.web=0;ch=true}}if(t.ink>0){t.ink-=delta;if(t.ink<=0){t.ink=0;ch=true}}if(t.sand>0){t.sand-=delta;if(t.sand<=0){t.sand=0;ch=true}}});if(ch)render();
+ const kind=obstacleKind();if(!kind||tut.on||obsBusy)return;obsT+=delta;const need=obsCount===0?(kind==='ink'?14000:16000):(kind==='ink'?22000:24000);
+ if(obsCount<3&&obsT>=need){obsT=0;obsCount++;kind==='ink'?inkAttack():kind==='web'?webAttack():sandStorm()}}
+function routeInner(){const out=[];for(let i=1;i<L.path.length-1;i++)out.push(L.path[i][1]*N+L.path[i][0]);return out}
+function inkAttack(){const cand=routeInner().filter(k=>!tiles[k].rock);if(!cand.length)return;const n=L.li>=8?2:1,tg=[];while(tg.length<n&&cand.length)tg.push(cand.splice(Math.floor(Math.random()*cand.length),1)[0]);
+ const o=document.querySelector('.octo');o?.classList.add('squirt');$('#message').textContent='¡Cuidado! El pulpo va a lanzar tinta…';synth('bubble');
+ obsBusy=setTimeout(()=>{obsBusy=null;o?.classList.remove('squirt');if(solved||!L)return;tg.forEach(k=>tiles[k].ink=7000);synth('splat');buzz([20,30,20]);render();tg.forEach(k=>board.children[k]?.classList.add('splash'));$('#message').textContent='¡Tinta! Toca las manchas para limpiarlas.';if(!seenObs.ink){markSeen('ink');showCoach('¡El pulpo manchó esta losa con <b>tinta</b>! Tócala para limpiarla y ver el camino.',tg[0],5000)}},1200)}
+function sandStorm(){const rows={};routeInner().forEach(k=>{const y=Math.floor(k/N);rows[y]=(rows[y]||0)+1});const ys=Object.keys(rows).map(Number).sort((a,b)=>rows[b]-rows[a]);const y=ys[Math.floor(Math.random()*Math.min(2,ys.length))];
+ const fr=document.querySelector('.boardFrame');fr.classList.remove('storm');void fr.offsetWidth;fr.classList.add('storm');$('#message').textContent='¡Se viene una tormenta de arena!';synth('wind');
+ obsBusy=setTimeout(()=>{obsBusy=null;if(solved||!L)return;const hit=[];for(let x=0;x<N;x++){const k=y*N+x;if(k!==L.start&&k!==L.end&&!tiles[k].rock){tiles[k].sand=8000;hit.push(k)}}render();hit.forEach((k,i)=>{const el=board.children[k];if(el){el.classList.add('sandIn');el.style.setProperty('--d',(i*60)+'ms')}});$('#message').textContent='¡La arena tapó una fila! Toca las losas para barrerla.';
+  if(!seenObs.sand){markSeen('sand');const rk=hit.find(k=>routeInner().includes(k))??hit[0];showCoach('La <b>tormenta</b> cubrió de arena estas losas. Tócalas para barrer la arena.',rk,5000)}},1300)}
+function obstacleTap(i){const t=tiles[i];if(coach.on&&coach.k===i)hideCoach();if(t.web>0){synth('click');buzz(20);$('#message').textContent=`¡Pegada en la telaraña! Espera ${Math.ceil(t.web/1000)} s o gira otra losa.`;const el=board.children[i];el?.classList.remove('webShake');void el?.offsetWidth;el?.classList.add('webShake');return true}
+ if(t.ink>0){t.ink=0;synth('wipe');buzz(10);render();return true}
+ if(t.sand>0){t.sand=0;synth('wipe');buzz(10);render();return true}
+ if(t.rock>0){t.rock--;moves++;synth(t.rock?'crack':'break');buzz(t.rock?25:[30,40,60]);render();board.children[i]?.classList.add(t.rock?'hit':'broke');$('#message').textContent=t.rock?'¡Crack! Un golpe más…':'¡Roca rota! Ahora puedes girar la losa.';return true}
+ return false}
+
+/* ===== v15: huesos para recoger + pantalla de mundo completado ===== */
+const HINT_COST=3;
+if(!progress.bones)progress.bones={};if(typeof progress.wallet!=='number')progress.wallet=0;
+let gotNow=new Set(),hintsUsed=0;
+function bonesFor(lv){if(lv.bones)return lv.bones;const r=mulberry(lv.seed^0x5B0E5);const inner=[];for(let i=1;i<lv.path.length-1;i++)inner.push(i);shuffle(inner,r);
+ const want=Math.min([1,2,2,3][lv.w]+(lv.li>=6?1:0),Math.max(1,Math.floor(inner.length/2)));const pick=[];
+ for(const i of inner){if(pick.length>=want)break;if(pick.every(j=>Math.abs(j-i)>=2))pick.push(i)}
+ lv.bones=pick.sort((a,b)=>a-b).map(i=>lv.path[i][1]*lv.N+lv.path[i][0]);return lv.bones}
+const banked=i=>progress.bones[i]||[];
+function boneStat(w){let got=0,tot=0;for(let li=0;li<PER_WORLD;li++){const i=w*PER_WORLD+li;tot+=bonesFor(buildLevel(i,variantOf(i))).length;got+=banked(i).length}return[got,tot]}
+function drawWallet(bump){const el=$('#boneCount');if(!el)return;el.querySelector('b').textContent=progress.wallet;if(bump){el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump')}}
+function drawHint(){$('#hint').innerHTML=hintsUsed===0||devMode?'💡 Pista':`💡 Pista <small class="cost">${HINT_COST}<i class="boneIco"></i></small>`}
+function payHint(){if(solved)return false;if(hintsUsed===0||devMode){hintsUsed++;drawHint();return true}
+ if(progress.wallet>=HINT_COST){progress.wallet-=HINT_COST;store('turronProgress',progress);drawWallet(true);hintsUsed++;return true}
+ $('#message').textContent=`Necesitas ${HINT_COST} huesos para otra pista. ¡Arma el camino por los huesos y Turrón los recogerá!`;const el=$('#boneCount');el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake');synth('click');return false}
+function collectBone(k){if(!L.bones||!L.bones.includes(k)||gotNow.has(k))return;gotNow.add(k);const tile=board.children[k],b=tile&&tile.querySelector('.bone');const isNew=!banked(idx).includes(k)&&!devSolved;
+ if(isNew){progress.bones[idx]=[...banked(idx),k];progress.wallet++;store('turronProgress',progress)}
+ synth('bone');buzz(12);if(!b){drawWallet(isNew);return}
+ const r=b.getBoundingClientRect(),to=$('#boneCount').getBoundingClientRect();b.classList.add('pop');
+ if(!isNew){return}
+ const f=document.createElement('i');f.className='boneFly';Object.assign(f.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});document.body.append(f);
+ const dx=to.left+to.width*.25-r.left-r.width/2,dy=to.top+to.height/2-r.top-r.height/2;
+ f.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${dx*.5}px,${dy*.5-60}px) scale(1.3)`,opacity:1,offset:.45},{transform:`translate(${dx}px,${dy}px) scale(.5)`,opacity:.9}],{duration:700,easing:'cubic-bezier(.5,0,.6,1)'}).onfinish=()=>{f.remove();drawWallet(true)}}
+
+const WD_INFO=[
+ {animal:'sp-tern',name:'Gaviotín',fact:'Los gaviotines se lanzan en picada al mar para atrapar peces pequeños. En la zona de Mejillones anida el gaviotín chico, un ave en peligro de extinción.'},
+ {animal:'sp-pelican',name:'Pelícano',fact:'El pelícano recoge los peces con la gran bolsa de su pico, bota el agua y luego se los traga.'},
+ {animal:'sp-vulture',name:'Jote',fact:'El jote de cabeza colorada encuentra su comida gracias a su olfato, algo muy raro entre las aves.'},
+ {animal:'final',name:'',fact:'¿Sabías que el pulpo tiene tres corazones y puede cambiar de color para esconderse?'}];
+function confetti(el){const c=['#ffc53d','#27a667','#2e93c9','#f07a34','#e85a8a','#fff'];el.innerHTML=Array.from({length:44},(_,i)=>`<i style="left:${Math.random()*100}%;background:${c[i%c.length]};animation-delay:${(Math.random()*1.2).toFixed(2)}s;animation-duration:${(2.2+Math.random()*1.6).toFixed(2)}s;transform:rotate(${Math.random()*360}deg)"></i>`).join('')}
+function showWorldDone(w){stopCelebration();$('#win').hidden=true;const W=WORLDS[w],info=WD_INFO[w],last=w===WORLDS.length-1;let st=0;for(let i=0;i<PER_WORLD;i++)st+=starsOf(w*PER_WORLD+i);const [bg,bt]=boneStat(w);
+ $('#wdKicker').textContent=last?'¡Aventura completada!':'¡Mundo completado!';$('#wdTitle').textContent=last?'¡Turrón llegó a casa!':W.name;
+ $('#wdStage').innerHTML=last?`<img class="wdDog" alt="" src="${DOG}"><i class="wdAnimal small sp-tern"></i><i class="wdAnimal small sp-pelican"></i><i class="wdAnimal small sp-vulture"></i><i class="wdAnimal small sp-octo"></i>`:`<img class="wdDog" alt="" src="${DOG}"><i class="wdAnimal ${info.animal}" role="img" aria-label="${info.name}"></i>`;
+ $('#wdStars').innerHTML=`<b>★ ${st}</b>/${PER_WORLD*3}`;$('#wdBones').innerHTML=`<i class="boneIco"></i><b>${bg}</b>/${bt}`;
+ $('#wdFact').innerHTML=`<strong>${last?'Dato curioso':'Conoce al '+info.name.toLowerCase()}</strong>${info.fact}`;
+ if(last){$('#wdNext').innerHTML=`Completaste los ${TOTAL} niveles. ¿Te faltan estrellas o huesos? ¡Vuelve a jugar cualquier nivel desde el mapa!`;$('#wdGo').textContent='🗺️ Ver el mapa';$('#wdMap').hidden=true}
+ else{const Nx=WORLDS[w+1];$('#wdNext').innerHTML=`<span>Nuevo mundo desbloqueado</span><div><i class="worldIcon ${Nx.id}" aria-hidden="true"></i><b>${Nx.name}</b><small>Tablero ${Nx.size}×${Nx.size}</small></div>`;$('#wdGo').textContent=`Ir a ${Nx.name} →`;$('#wdMap').hidden=false}
+ $('#worldDone').dataset.w=w;confetti($('#wdConfetti'));$('#worldDone').hidden=false;setTimeout(()=>{synth('unlock');buzz([30,50,30,50,60])},250);$('#wdGo').focus()}
+$('#wdGo').onclick=()=>{synth('click');const w=Number($('#worldDone').dataset.w);$('#worldDone').hidden=true;if(w>=WORLDS.length-1){openMap(w);return}idx=(w+1)*PER_WORLD;setup()};
+$('#wdMap').onclick=()=>{synth('click');const w=Number($('#worldDone').dataset.w);$('#worldDone').hidden=true;openMap(Math.min(w+1,WORLDS.length-1))};
+function drawTime(){updateTimeDog();const pct=Math.max(0,remaining/totalTime*100);$('#timefill').style.width=pct+'%';$('#timebar').classList.toggle('low',pct<=25);$('#timebar').setAttribute('aria-valuenow',String(Math.round(pct)));$('#timebar').setAttribute('aria-valuetext',Math.ceil(remaining/1000)+' segundos restantes');$('#timeLabel').textContent=Math.ceil(remaining/1000)+' s';$('#timeStar').classList.toggle('lost',pct<=50)}
+function stopTimer(){clearInterval(timer);timer=null}
+let crabTimer=null,crabWarning=null,crabTarget=-1,crabFrame=0,crabCount=0,playerRotated=new Set(),elapsedCrab=0;
+function clearCrab(){clearTimeout(crabWarning);clearInterval(crabTimer);crabWarning=null;crabTimer=null;crabTarget=-1;crabFrame=0;board.querySelectorAll('.crabTarget').forEach(b=>{b.classList.remove('crabTarget');b.querySelector('.crabSprite')?.remove()})}
+function resetCrab(){clearCrab();crabCount=0;elapsedCrab=0;playerRotated=new Set()}
+function updateTimeDog(){const hero=$('#hero'),box=$('#timeDog');if(!hero||!box)return;let active=gameStarted&&!solved&&remaining>0&&$('#levelSelect').hidden;let low=active&&remaining/totalTime<=.5;hero.classList.toggle('impatient',low);const f=!low?11:remaining/totalTime<=.25?8+Math.floor(performance.now()/500)%3:Math.floor(performance.now()/210)%8;const cell=box.clientWidth||70;box.style.backgroundSize=`${cell*4}px ${cell*3}px`;box.style.backgroundPosition=`-${f%4*cell}px -${Math.floor(f/4)*cell}px`;box.setAttribute('aria-label',f>=8?'Turrón se impacienta y ladra':'Turrón da vueltas intentando morderse la cola')}
+function crabEligible(){return gameStarted&&!solved&&$('#levelSelect').hidden&&L&&((L.w===0&&L.li>=5)||L.w===2)&&crabCount<2}
+function warnCrab(){if(crabTarget>=0||!crabEligible())return;const choices=[...playerRotated].filter(i=>i!==L.start&&i!==L.end&&tiles[i]&&!tiles[i].fixed);if(!choices.length)return;const aligned=choices.filter(i=>tiles[i].route&&tiles[i].mask===tiles[i].ideal);crabTarget=(aligned.length?aligned:choices)[Math.floor(Math.random()*(aligned.length?aligned:choices).length)];crabFrame=4;if(L.w===2)synth('scurry');else playFx('cangrejo');$('#message').textContent='¡Cuidado! '+critter()+' va a girar la losa marcada.';render();if(!seenObs['critter'+L.w]){markSeen('critter'+L.w);showCoach((L.w===2?'¡Una <b>lagartija</b>':'¡Un <b>cangrejo</b>')+' se subió a esta losa y la va a girar! Después vuelve a orientarla.',crabTarget,3200,true)}crabTimer=setInterval(()=>{crabFrame=4+(crabFrame-3)%4;const sprite=board.querySelector('.crabSprite');if(sprite)sprite.style.backgroundPosition=`-${crabFrame%4*56}px -${Math.floor(crabFrame/4)*56}px`},220);crabWarning=setTimeout(()=>{const i=crabTarget;clearCrab();if(!gameStarted||solved||!$('#levelSelect').hidden||remaining<=0||i<0)return;tiles[i].mask=rotate(tiles[i].mask,1);crabCount++;sound('turn');$('#message').textContent='¡'+critter()+' giró una losa! Puedes volver a orientarla.';render();board.children[i]?.classList.add('spin');buzz([15,30,15])},1600)}
+function startTimer(){stopTimer();lastTick=99;remaining=totalTime;drawTime();let last=performance.now();timer=setInterval(()=>{const now=performance.now();if(isPaused()){last=now;return}const delta=now-last;remaining=Math.max(0,remaining-delta);last=now;drawTime();{const sec=Math.ceil(remaining/1000);if(sec<=10&&sec>0&&sec!==lastTick){lastTick=sec;synth('tick')}}if(crabEligible()){elapsedCrab+=delta;if(elapsedCrab>=26000){elapsedCrab=0;warnCrab()}}obstacleTick(delta);if(remaining===0){clearCrab();stopTimer();solved=true;lastWin=false;stopCelebration();sound('lose');$('#stars').hidden=true;$('#winTitle').textContent='¡Se acabó el tiempo!';$('#winText').textContent='Turrón aún puede llegar a su casita. Inténtalo otra vez.';$('#next').textContent='↺ Reintentar nivel';$('#winFoot').textContent='Las piezas volverán a su posición inicial.';$('#win').hidden=false}},100)}
+function stopCelebration(){walkToken++;clearInterval(celebrationTimer);clearTimeout(winTimeout);celebrationTimer=null;winTimeout=null;$('#victoryScene').hidden=true}
+function celebrate(){stopCelebration();$('#victoryScene').hidden=false;let frame=0;$('#victoryDog').src=DOG_FRAMES[0];$('#victoryHouse').src=HOUSE_FRAMES[0];celebrationTimer=setInterval(()=>{frame++;$('#victoryDog').src=DOG_FRAMES[Math.min(frame,7)];$('#victoryHouse').src=HOUSE_FRAMES[frame%4];if(frame>=7){clearInterval(celebrationTimer);celebrationTimer=null;$('#victoryHouse').src=HOUSE_FRAMES[3]}},240)}
+let curWorld=null;function setWorld(id){document.body.dataset.world=id;if(curWorld&&curWorld!==id){document.body.classList.remove('worldSwap');void document.body.offsetWidth;document.body.classList.add('worldSwap');setTimeout(()=>document.body.classList.remove('worldSwap'),900)}curWorld=id}
+function setup(){stopCelebration();resetCrab();L=buildLevel(idx,variantOf(idx));N=L.N;tiles=L.init.map(x=>({...x}));endTutorial(false);hideCoach();applyObstacles();if(L.idx===0&&gameStarted&&(forceTut||lsGet('turronTutorial')!=='1')){forceTut=false;setTimeout(startTutorial,450)}moves=0;solved=false;lastWin=false;devSolved=false;gotNow=new Set();hintsUsed=0;bonesFor(L);drawHint();drawWallet();$('#win').hidden=true;
+ const W=WORLDS[L.w];setWorld(W.id);if(gameStarted&&$('#homeScreen').hidden&&$('#introVideoScreen').hidden){setMusic(W.id==='dunas'?'desierto':W.id==='cerro'?'cerros':W.id);}$('#levelLabel').innerHTML=`<i class="levelWorldIcon ${W.id}" aria-hidden="true"></i> ${L.w+1}-${L.li+1}`;$('#story').textContent=L.title;$('#message').textContent=(progress.wallet===0&&L.bones.length&&!banked(idx).length)?'Arma el camino pasando por los huesos: ¡Turrón los recogerá al volver a casa!':'Gira las piezas para llevar a Turrón a su casita.';
+ $('#chapterTrack').innerHTML=Array.from({length:PER_WORLD},(_,i)=>`<span class="${i<L.li?'done':i===L.li?'current':''}"></span>`).join('');
+ board.style.gridTemplateColumns=`repeat(${N},1fr)`;board.dataset.size=N;totalTime=L.time*1000;remaining=totalTime;
+ if(gameStarted)startTimer();else drawTime();drawDev();render()}
+function routePath(mask){const paths={1:'M50 0 L50 50',2:'M50 50 L100 50',3:'M50 0 L50 34 Q50 50 66 50 L100 50',4:'M50 50 L50 100',5:'M50 0 L50 100',6:'M100 50 L66 50 Q50 50 50 66 L50 100',8:'M0 50 L50 50',9:'M0 50 L34 50 Q50 50 50 34 L50 0',10:'M0 50 L100 50',12:'M50 100 L50 66 Q50 50 34 50 L0 50'};if(paths[mask])return paths[mask];let parts=[];for(let d=0;d<4;d++)if(mask&(1<<d))parts.push(['M50 50 L50 0','M50 50 L100 50','M50 50 L50 100','M50 50 L0 50'][d]);return parts.join(' ')}
+const goal=()=>L.par+Math.ceil(L.par/2)+2+2*((L.rocks||[]).length);let devSolved=false;
+function starRating(){const tr=remaining/totalTime;let s=1;if(tr>.5)s++;if(moves<=goal())s++;return s}
+function render(){const {seen,won}=reach(tiles,N,L.start,L.end);board.replaceChildren();tiles.forEach((t,i)=>{const b=document.createElement('button');b.type='button';b.className=`tile ${t.mask?'pipe':'ground'} ${i===L.start?'start':''} ${i===L.end?'end':''} ${seen.has(i)?'connected':''} ${devMode&&t.route&&!t.fixed?'devRoute':''} ${i===crabTarget?'crabTarget':''} ${t.rock>0?'rocked':''}`;b.setAttribute('role','gridcell');if(i===L.start||i===L.end)b.disabled=true;b.setAttribute('aria-label',`${i===L.start?'Turrón, ':''}${i===L.end?'casita, ':''}fila ${Math.floor(i/N)+1}, columna ${i%N+1}. ${b.disabled?'Pieza fija':'Toca para girar'}`);b.dataset.i=i;let html=`<svg class="routeSvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path class="routePath" d="${routePath(t.mask)}" /></svg>`;if(i===L.start)html+='<img class="icon dogIcon" aria-hidden="true" src="'+DOG+'">';if(i===L.end)html+='<img class="icon houseIcon" aria-hidden="true" src="'+HOUSE+'">';if(webWarn.has(i))html+='<span class="spiderOnTile"></span>';if(t.web>0)html+='<i class="web">'+WEB_SVG+'</i>';if(t.rock>0)html+='<img class="rockImg" alt="" src="'+PROPS.rock+'">'+(t.rock===1?'<i class="crack"></i>':'');if(t.ink>0)html+='<i class="ink"></i>';if(t.sand>0)html+='<i class="sand"></i>';if(L.bones&&L.bones.includes(i)&&!gotNow.has(i))html+='<i class="bone '+(banked(idx).includes(i)?'old ':'')+(seen.has(i)?'lit':'')+'" aria-hidden="true"></i>';if(i===crabTarget&&L.w===2)html+='<span class="crabSprite lizOnTile" aria-hidden="true"></span>';else if(i===crabTarget)html+='<span class="crabSprite" aria-hidden="true" style="background-position:-'+(crabFrame%4*56)+'px -'+Math.floor(crabFrame/4)*56+'px"></span>';b.innerHTML=html;board.append(b)});if(tut.on||coach.on)requestAnimationFrame(layerUpdate);
+ $('#movesLabel').innerHTML=`<b>${moves}</b><small>/${goal()}</small>`;$('#movesLabel').setAttribute('aria-label',`Giros ${moves}, meta ${goal()}`);$('#movesLabel').title='Giros / meta para 3 estrellas';$('#movesLabel').classList.toggle('over',moves>goal());
+ if(won&&!solved&&gameStarted){solved=true;lastWin=true;clearCrab();stopTimer();const rating=starRating();if(!devSolved){progress.stars[idx]=Math.max(starsOf(idx),rating);store('turronProgress',progress)}
+  runWalk(()=>{winTimeout=setTimeout(()=>{if(!solved||remaining===0)return;const lastOfWorld=L.li===PER_WORLD-1,lastAll=idx===TOTAL-1;
+   $('#stars').innerHTML=[0,1,2].map(k=>`<i class="starImg ${k<rating?'on':''}" style="animation-delay:${.25+k*.28}s"></i>`).join('')+'<i class="burst"></i>';$('#stars').setAttribute('aria-label',rating+' estrellas');$('#stars').hidden=false;
+   $('#winTitle').textContent=lastAll?'¡Terminaste la aventura!':lastOfWorld?`¡Completaste ${WORLDS[L.w].name}!`:'¡Encontraste el camino!';
+   $('#winText').textContent=(L.bones.length?`🦴 ${gotNow.size}/${L.bones.length} huesos. `:'')+`Turrón llegó a su casita en ${moves} giros, con ${Math.ceil(remaining/1000)} segundos restantes.${rating<3?' Consejo: '+(remaining/totalTime<=.5?'termina con más de la mitad del tiempo':'usa '+goal()+' giros o menos')+' para ganar más estrellas.':''}`;
+   $('#next').textContent=lastAll?'🗺️ Ver el mapa':lastOfWorld?`Ir a ${WORLDS[L.w+1].name} →`:'Siguiente nivel →';
+   $('#winFoot').textContent=`Estrellas totales: ${totalStars()}/${TOTAL*3}`;$('#win').hidden=false;celebrate();[0,1,2].forEach(k=>{if(k<rating)setTimeout(()=>{synth('star');buzz(15)},550+k*280)});},120)})}}
+
+/* ================= MAPA / SELECTOR ================= */
+function worldUnlocked(w){return unlocked(w*PER_WORLD)}
+function openMap(w){clearCrab();endTutorial(false);hideCoach();stopCelebration();$('#win').hidden=true;selWorld=w??(L?L.w:0);setMusic(['costa','puerto','desierto','cerros'][selWorld]);renderMap();$('#levelSelect').hidden=false;$('#lsClose').hidden=!gameStarted||!L||solved}
+function renderMap(){$('#lsTotal').textContent=`★ ${totalStars()}/${TOTAL*3}`;$('#devMode').checked=devMode;$('#devTools').hidden=!devMode;
+ $('#worldTabs').innerHTML=WORLDS.map((W,w)=>{let s=0;for(let i=0;i<PER_WORLD;i++)s+=starsOf(w*PER_WORLD+i);const lock=!worldUnlocked(w);return`<button class="worldTab ${w===selWorld?'sel':''}" data-w="${w}" ${lock?'disabled':''}><b>${lock?'🔒':`<i class="worldIcon ${W.id}" aria-hidden="true"></i>`}</b><span>${W.name}</span><small>★ ${s}/${PER_WORLD*3}</small><small>🦴 ${boneStat(w).join('/')}</small></button>`}).join('');
+ const W=WORLDS[selWorld];document.body.dataset.world=W.id;$('#worldDesc').textContent=`${W.desc} Tablero ${W.size}×${W.size} · ${W.time} s por nivel.`;
+ $('#levelGrid').innerHTML=Array.from({length:PER_WORLD},(_,li)=>{const i=selWorld*PER_WORLD+li,s=starsOf(i),lock=!unlocked(i);let dev='';if(devMode){const lv=buildLevel(i,variantOf(i));dev=`<em>L${lv.len} · C${lv.turns} · G${lv.par}${variantOf(i)?' · v'+variantOf(i):''}</em>`}
+  return`<button class="lvBtn ${lock?'locked':''} ${L&&i===idx?'cur':''}" data-i="${i}" ${lock?'disabled':''} aria-label="Nivel ${selWorld+1}-${li+1}${lock?', bloqueado':', '+s+' estrellas'}"><b>${lock?'🔒':li+1}</b><span>${lock?'':'★'.repeat(s)+'☆'.repeat(3-s)}</span>${dev}</button>`}).join('')}
+function exportVariants(){const out={};Object.entries(variants).forEach(([i,v])=>{if(v)out[i]=v});$('#devExport').value=JSON.stringify(out);$('#devExport').hidden=false;$('#devExport').select()}
+function drawDev(){const box=$('#devPanel');box.hidden=!devMode;if(!devMode||!L)return;$('#devInfo').textContent=`Nivel ${L.w+1}-${L.li+1} (#${idx}) · variante ${L.variant} · semilla ${L.seed} · largo ${L.len} · curvas ${L.turns} · giros mínimos ${L.par} · ${N}×${N}`}
+function setVariant(v){variants[idx]=Math.max(0,v);store('turronVariants',variants);setup()}
+
+function enterGameAfterIntro(){const v=$('#introVideo');v.pause();v.currentTime=0;$('#introVideoScreen').hidden=true;$('#replayIntro').hidden=true;try{localStorage.setItem('turronIntroSeen','1')}catch{}if(introFromSettings){introFromSettings=false;if(L||!$('#levelSelect').hidden)setMusic(musicKeyFor(!$('#levelSelect').hidden?selWorld:L.w));return}sound('turn');let first=0;while(first<TOTAL-1&&starsOf(first)>0)first++;openMap(Math.floor(first/PER_WORLD))}
+$('#titleMusicToggle').onclick=()=>{if(musicKey==='portada'){stopMusic();$('#titleMusicToggle').textContent='♪ Música'}else{settings.music=true;saveSettings();setMusic('portada');$('#titleMusicToggle').textContent='♫ Pausar'}};
+let introFromSettings=false;function playIntro(fromSettings){introFromSettings=!!fromSettings;stopMusic();$('#introVideoScreen').hidden=false;const v=$('#introVideo');v.currentTime=0;$('#replayIntro').hidden=true;v.play().catch(()=>{$('#replayIntro').hidden=false})}
+$('#playButton').onclick=()=>{synth('click');$('#homeScreen').hidden=true;let seen=false;try{seen=localStorage.getItem('turronIntroSeen')==='1'}catch{}if(seen){stopMusic();enterGameAfterIntro()}else playIntro(false)};
+$('#introVideo').onended=enterGameAfterIntro;
+$('#skipIntro').onclick=enterGameAfterIntro;
+$('#replayIntro').onclick=()=>{$('#introVideo').play().then(()=>{$('#replayIntro').hidden=true}).catch(()=>{})};
+$('#worldTabs').onclick=e=>{const b=e.target.closest('.worldTab');if(!b||b.disabled)return;selWorld=Number(b.dataset.w);setMusic(['costa','puerto','desierto','cerros'][selWorld]);renderMap()};
+$('#levelGrid').onclick=e=>{const b=e.target.closest('.lvBtn');if(!b||b.disabled)return;idx=Number(b.dataset.i);gameStarted=true;$('#levelSelect').hidden=true;setup()};
+$('#lsClose').onclick=()=>{$('#levelSelect').hidden=true;if(L)document.body.dataset.world=WORLDS[L.w].id};
+$('#devMode').onchange=e=>{devMode=e.target.checked;store('turronDev',devMode);renderMap();if(L){drawDev();render()}};
+$('#devExportBtn').onclick=exportVariants;
+$('#devResetProgress').onclick=()=>{progress={stars:{}};store('turronProgress',progress);renderMap()};
+$('#devPrev').onclick=()=>setVariant(variantOf(idx)-1);$('#devNext').onclick=()=>setVariant(variantOf(idx)+1);
+$('#devSolve').onclick=()=>{tiles.forEach(t=>{if(t.route&&!t.fixed)t.mask=t.ideal});devSolved=true;render()};
+$('#map').onclick=()=>{synth('click');openMap()};
+board.addEventListener('click',e=>{const el=e.target.closest('.tile');if(!el||solved)return;const i=Number(el.dataset.i);if(i===L.start||i===L.end)return;if(obstacleTap(i))return;if(tut.on){if(tut.step===0)tut.step=1;tut.taps++}if(coach.on&&coach.k===i)hideCoach();tiles[i].mask=rotate(tiles[i].mask,1);playerRotated.add(i);moves++;sound('turn');$('#message').textContent='¡Sigue conectando las piezas!';render();board.children[i]?.classList.add('spin');buzz(8)});
+$('#reset').onclick=()=>{synth('click');setup()};
+$('#next').onclick=()=>{if(!lastWin){setup();return}if(L.li===PER_WORLD-1){showWorldDone(L.w);return}if(idx===TOTAL-1){openMap(WORLDS.length-1);return}idx++;setup()};
+function openSettings(){synth('click');$('#optMusic').checked=settings.music;$('#optFx').checked=settings.fx;$('#optVib').checked=settings.vib;$('#settings').hidden=false;$('#optClose').focus()}
+$('#sound').onclick=openSettings;$('#lsSettings').onclick=openSettings;
+$('#optMusic').onchange=e=>{settings.music=e.target.checked;saveSettings();if(settings.music)setMusic(musicKeyFor(!$('#levelSelect').hidden?selWorld:(L?L.w:0)));else stopMusic()};
+$('#optFx').onchange=e=>{settings.fx=e.target.checked;saveSettings();synth('click')};
+$('#optVib').onchange=e=>{settings.vib=e.target.checked;saveSettings();buzz(30)};
+$('#optClose').onclick=()=>{synth('click');$('#settings').hidden=true};
+$('#optTut').onclick=()=>{$('#settings').hidden=true;$('#levelSelect').hidden=true;$('#worldDone').hidden=true;forceTut=true;idx=0;gameStarted=true;setup()};
+$('#optIntro').onclick=()=>{$('#settings').hidden=true;playIntro(true)};
+$('#hint').onclick=()=>{if(!payHint())return;synth('hint');let found=-1;for(let i=1;i<L.path.length-1;i++){const k=L.path[i][1]*N+L.path[i][0];if(tiles[k].mask!==tiles[k].ideal){found=k;break}}if(found<0){$('#message').textContent='El camino principal está orientado; revisa otra ruta posible o reinicia.';return}const b=board.children[found];b.focus();b.style.boxShadow='inset 0 0 0 4px #ec593d,0 0 14px #ec593d';$('#message').textContent=`Prueba girar la pieza destacada (fila ${Math.floor(found/N)+1}, columna ${found%N+1}).`};
+setup();})();
+
+</script></body></html>
